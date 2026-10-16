@@ -1,84 +1,988 @@
-#!/usr/bin/env python3
-"""
-Añade a index.html de Talento sin Fronteras (CR Integração Cultural):
-  - Pestaña "Servicios" (menú de escritorio + menú móvil + tarjeta en Inicio)
-  - Botones de WhatsApp (hero, cada servicio, bloque final y botón flotante)
-  - Columna de contacto en el pie de página
-  - Estilos necesarios (dentro del <style> existente)
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- El viewport ya lo tenías aquí, ¡perfecto! -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Talento sin Fronteras — Empleo en España para extranjeros</title>
+    
+    <!-- AQUÍ AGREGAMOS EL FAVICON -->
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    
+    <meta name="description" content="Guía completa de documentación, regularización, homologación y derechos laborales para extranjeros con NIE o doble nacionalidad en España.">
+    
+    <!-- Tus fuentes y estilos externos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
-Uso:   python3 agregar_servicios_whatsapp.py ruta/a/index.html
-Es idempotente: si ya se aplicó, no vuelve a modificar nada.
-Antes de escribir, guarda una copia en index.html.bak
-"""
-import sys
-import shutil
-from urllib.parse import quote
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <style>
+    /* Tus estilos CSS continúan aquí abajo... */
+:root{
+  --fondo-premium:#0A1F1C; /* Verde esmeralda muy oscuro */
+  --blanco:#FFFFFF;
+  --dorado:#F59E0B; /* Dorado premium */
+  --menta:#10B981;  /* Verde menta para detalles */
+  --gris-secundario:#94A3B8; /* Texto secundario gris claro */
+  
+  --verde-mid:#0F3D35;
+  --verde-light:#164E44;
+  --gris-pale:#112D29;
+  --negro:#05100E;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+  --r:12px;--r-lg:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--font-body);color:var(--blanco);background:var(--fondo-premium);-webkit-font-smoothing:antialiased}
+a{color:var(--dorado);text-decoration:none;transition:color .15s}
+a:hover{color:var(--menta);text-decoration:none}
 
-TELEFONO = "34665575607"  # +34 665 57 56 07, sin "+" ni espacios (formato wa.me)
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(10,31,28,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--verde-light);padding:0 2rem}
+.nav-inner{max-width:1120px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.logo{font-family:var(--font-display);font-size:1.15rem;font-weight:700;color:var(--blanco);display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-dot{width:10px;height:10px;border-radius:50%;background:var(--dorado);flex-shrink:0;box-shadow:0 0 10px var(--dorado)}
+.nav-links{display:flex;align-items:center;gap:4px;list-style:none}
+.nav-links a{font-size:.82rem;font-weight:500;color:var(--gris-secundario);padding:6px 12px;border-radius:8px;transition:all .15s}
+.nav-links a:hover,.nav-links a.active{background:var(--gris-pale);color:var(--blanco);text-decoration:none}
+.nav-cta{background:linear-gradient(135deg,var(--dorado),#D97706)!important;color:var(--negro)!important;font-weight:600!important;border-radius:8px;padding:7px 16px!important}
+.nav-cta:hover{filter:brightness(1.1)!important}
+.hamburger{display:none;background:none;border:none;cursor:pointer;font-size:1.4rem;color:var(--dorado)}
 
+/* HERO */
+.hero{background:radial-gradient(circle at top,var(--verde-light) 0%,var(--fondo-premium) 70%);min-height:88vh;display:flex;flex-direction:column;justify-content:center;padding:5rem 2rem 4rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f59e0b' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero-inner{max-width:760px;margin:0 auto;text-align:center;position:relative}
+.hero-kicker{display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);padding:6px 18px;border-radius:30px;font-size:.78rem;font-weight:500;color:var(--dorado);letter-spacing:.05em;margin-bottom:2rem}
+.hero h1{font-family:var(--font-display);font-size:clamp(2.4rem,6vw,4rem);font-weight:900;color:var(--blanco);line-height:1.1;margin-bottom:1.5rem}
+.hero h1 em{color:var(--dorado);font-style:italic;background:linear-gradient(to right,#FFE082,var(--dorado));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:1.05rem;color:var(--gris-secundario);line-height:1.75;max-width:560px;margin:0 auto 2.5rem}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;border:none;transition:all .18s;font-family:var(--font-body);text-decoration:none;white-space:nowrap}
+.btn-blanco{background:var(--blanco);color:var(--fondo-premium)}
+.btn-blanco:hover{background:var(--dorado);color:var(--negro);text-decoration:none}
+.btn-outline-blanco{background:transparent;color:var(--blanco);border:1.5px solid var(--verde-light)}
+.btn-outline-blanco:hover{background:rgba(255,255,255,0.05);border-color:var(--dorado);text-decoration:none}
+.btn-verde{background:linear-gradient(135deg,var(--dorado),#D97706);color:var(--negro)}
+.btn-verde:hover{filter:brightness(1.1);text-decoration:none}
+.btn-sm{padding:9px 18px;font-size:.82rem}
+.btn-lg{padding:15px 32px;font-size:1rem}
+.hero-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--gris-pale);border:1px solid var(--verde-light);padding:5px 14px;border-radius:20px;font-size:.78rem;color:var(--gris-secundario)}
 
-def wa(mensaje: str) -> str:
-    return f"https://wa.me/{TELEFONO}?text={quote(mensaje)}"
+/* LAYOUT */
+.container{max-width:1120px;margin:0 auto;padding:0 2rem}
+.container-sm{max-width:800px;margin:0 auto;padding:0 2rem}
+.section{padding:5rem 0}
+.section-alt{background:#071715}
+.section-dark{background:var(--fondo-premium);color:var(--blanco)}
 
+/* SECTION HEADERS */
+.sh{text-align:center;margin-bottom:3.5rem}
+.sh-eyebrow{display:inline-block;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--dorado);background:var(--gris-pale);padding:4px 14px;border-radius:20px;margin-bottom:.75rem;border:1px solid rgba(245,158,11,0.15)}
+.sh h2{font-family:var(--font-display);font-size:clamp(1.7rem,3.5vw,2.5rem);font-weight:700;margin-bottom:.75rem;color:var(--blanco)}
+.sh p{font-size:1rem;color:var(--gris-secundario);max-width:520px;margin:0 auto;line-height:1.75}
+.sh-dark h2{color:var(--blanco)}
+.sh-dark p{color:var(--gris-secundario)}
+.sh-dark .sh-eyebrow{background:var(--gris-pale);color:var(--dorado)}
 
-MSG_GENERAL = "Hola, vengo de la web Talento sin Fronteras y me gustaría recibir información sobre vuestros servicios."
-MSG_IDIOMAS = "Hola, me interesa el servicio de Idiomas (clases de español / preparación DELE A2 o CCSE). ¿Me das más información?"
-MSG_INTEGRACION = "Hola, me interesa la orientación de Integración cultural en España. ¿Me das más información?"
-MSG_CONSULTORIA = "Hola, me interesa la Consultoría / Inmigración (trámites, documentación, CV y entrevistas). ¿Me das más información?"
+/* GRID CARDS */
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.25rem}
+.card{background:var(--fondo-premium);border:1px solid var(--verde-light);border-radius:var(--r-lg);padding:1.75rem;transition:all .2s}
+.card:hover{border-color:var(--dorado);box-shadow:0 4px 25px rgba(245,158,11,0.08);transform:translateY(-2px)}
+.card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem}
+.card h3{font-size:1rem;font-weight:600;margin-bottom:.4rem;color:var(--blanco)}
+.card p{font-size:.875rem;color:var(--gris-secundario);line-height:1.7}
+.card-link{display:flex;align-items:center;gap:6px;margin-top:1rem;font-size:.82rem;font-weight:600;color:var(--dorado)}
 
-NL = "\r\n"  # el archivo usa CRLF casi en su totalidad
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:1.5rem;padding:2rem 0;border-bottom:1px solid var(--verde-light)}
+.step:last-child{border-bottom:none}
+.step-left{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.step-num{width:48px;height:48px;border-radius:50%;background:var(--dorado);color:var(--negro);font-family:var(--font-display);font-size:1.1rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step-line{width:2px;flex:1;background:var(--verde-light);min-height:30px}
+.step-body h3{font-size:1rem;font-weight:600;margin-bottom:.5rem;color:var(--blanco)}
+.step-body p{font-size:.875rem;color:var(--gris-secundario);line-height:1.75;margin-bottom:.75rem}
+.tip{background:var(--gris-pale);border-left:3px solid var(--dorado);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.82rem;color:var(--blanco);margin-top:.75rem;line-height:1.6}
+.tip strong{color:var(--dorado)}
+.alert{background:#26170c;border-left:3px solid var(--dorado);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.82rem;color:var(--gris-secundario);margin-top:.75rem;line-height:1.6}
+.alert strong{color:var(--dorado)}
 
+/* ACCORDION */
+.accordion{border:1px solid var(--verde-light);border-radius:var(--r);overflow:hidden;margin-top:.75rem}
+.acc-btn{width:100%;background:var(--fondo-premium);border:none;border-bottom:1px solid var(--verde-light);padding:.875rem 1.125rem;display:flex;justify-content:space-between;align-items:center;font-size:.875rem;font-weight:500;color:var(--blanco);cursor:pointer;text-align:left;transition:background .15s;font-family:var(--font-body)}
+.acc-btn:last-of-type{border-bottom:none}
+.acc-btn:hover,.acc-btn.open{background:var(--gris-pale);color:var(--dorado)}
+.acc-btn .chevron{transition:transform .2s;font-size:1rem;color:var(--gris-secundario)}
+.acc-btn.open .chevron{transform:rotate(180deg);color:var(--dorado)}
+.acc-body{display:none;padding:1rem 1.125rem;background:#061412;border-bottom:1px solid var(--verde-light);font-size:.875rem;color:var(--gris-secundario);line-height:1.75}
+.acc-body.open{display:block}
+.acc-body ul{padding-left:1.2rem;margin-top:.5rem}
+.acc-body ul li{margin-bottom:.4rem}
+.acc-body strong{color:var(--blanco)}
 
-def j(texto: str) -> str:
-    """Normaliza saltos de línea del bloque insertado a CRLF."""
-    return texto.strip("\n").replace("\r\n", "\n").replace("\n", NL) + NL
+/* TAGS */
+.tag{display:inline-block;font-size:.75rem;font-weight:500;padding:3px 12px;border-radius:20px;margin:3px}
+.tag-verde{background:rgba(16,185,129,0.15);color:var(--menta);border:1px solid rgba(16,185,129,0.2)}
+.tag-rojo{background:rgba(239,68,68,0.12);color:#FCA5A5}
+.tag-tierra{background:rgba(245,158,11,0.12);color:var(--dorado)}
+.tag-gris{background:var(--gris-pale);color:var(--gris-secundario);border:1px solid var(--verde-light)}
 
+/* HIGHLIGHTS */
+.hl-verde{background:var(--gris-pale);border:1px solid var(--menta);border-radius:var(--r);padding:1rem 1.25rem;font-size:.875rem;color:var(--blanco);line-height:1.7}
+.hl-tierra{background:var(--gris-pale);border:1px solid var(--dorado);border-radius:var(--r);padding:1rem 1.25rem;font-size:.875rem;color:var(--blanco);line-height:1.7}
+.hl-rojo{background:rgba(239,68,68,0.05);border:1px solid #EF4444;border-radius:var(--r);padding:1rem 1.25rem;font-size:.875rem;color:var(--blanco);line-height:1.7}
 
-# ----------------------------------------------------------------- CSS
-CSS = j(f"""
+/* COMPANIES */
+.company-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.company-card{background:var(--fondo-premium);border:1px solid var(--verde-light);border-radius:var(--r);padding:1.25rem;transition:all .2s}
+.company-card:hover{border-color:var(--dorado);box-shadow:0 2px 12px rgba(245,158,11,0.05)}
+.company-name{font-size:.95rem;font-weight:600;color:var(--blanco);margin-bottom:2px}
+.company-sector{font-size:.78rem;color:var(--gris-secundario);margin-bottom:.75rem}
+.company-badges{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.75rem}
+.company-desc{font-size:.8rem;color:var(--gris-secundario);line-height:1.6}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem}
+.filter-btn{padding:6px 16px;border-radius:20px;border:1px solid var(--verde-light);background:var(--fondo-premium);font-size:.8rem;color:var(--gris-secundario);cursor:pointer;font-family:var(--font-body);transition:all .15s}
+.filter-btn.active,.filter-btn:hover{background:var(--gris-pale);color:var(--dorado);border-color:var(--dorado)}
+
+/* CHAT */
+.chat-wrap{background:var(--fondo-premium);border:1px solid var(--verde-light);border-radius:var(--r-lg);overflow:hidden;max-width:720px;margin:0 auto}
+.chat-top{background:var(--verde-light);padding:1.125rem 1.5rem;display:flex;align-items:center;gap:12px}
+.chat-ava{width:40px;height:40px;border-radius:50%;background:var(--verde-mid);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.chat-name{font-size:.9rem;font-weight:600;color:var(--blanco)}
+.chat-status{font-size:.75rem;color:var(--menta)}
+.chat-msgs{padding:1.25rem;min-height:260px;max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:.875rem;background:#061412}
+.msg{max-width:83%;font-size:.875rem;line-height:1.65;padding:11px 15px;border-radius:var(--r)}
+.msg-bot{background:var(--fondo-premium);border:1px solid var(--verde-light);align-self:flex-start;border-bottom-left-radius:4px;color:var(--blanco)}
+.msg-user{background:linear-gradient(135deg,var(--verde-light),var(--verde-mid));color:var(--blanco);align-self:flex-end;border-bottom-right-radius:4px;border:1px solid var(--menta)}
+.msg-thinking{background:var(--fondo-premium);border:1px solid var(--verde-light);align-self:flex-start;padding:11px 15px;border-radius:var(--r);border-bottom-left-radius:4px;color:var(--gris-secundario);font-style:italic;font-size:.875rem}
+.quick-btns{display:flex;flex-wrap:wrap;gap:6px;padding:10px 1.25rem;border-top:1px solid var(--verde-light);background:#061412}
+.quick-btn{font-size:.77rem;padding:5px 11px;border-radius:20px;border:1px solid var(--verde-light);background:var(--fondo-premium);color:var(--gris-secundario);cursor:pointer;font-family:var(--font-body);transition:all .15s}
+.quick-btn:hover{background:var(--gris-pale);color:var(--dorado);border-color:var(--dorado)}
+.chat-input-row{display:flex;gap:8px;padding:.875rem 1.25rem;border-top:1px solid var(--verde-light);background:var(--fondo-premium)}
+.chat-input{flex:1;padding:9px 13px;font-size:.875rem;border:1px solid var(--verde-light);border-radius:8px;outline:none;font-family:var(--font-body);color:var(--blanco);background:#061412;transition:border-color .15s}
+.chat-input:focus{border-color:var(--dorado)}
+.chat-send{padding:9px 20px;background:var(--dorado);color:var(--negro);border:none;border-radius:8px;font-size:.875rem;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:background .15s}
+.chat-send:hover{filter:brightness(1.1)}
+
+/* CV FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:.82rem;font-weight:600;color:var(--gris-secundario)}
+.fg label span{color:#ef4444;margin-left:2px}
+.fg input,.fg textarea,.fg select{padding:9px 13px;font-size:.875rem;border:1px solid var(--verde-light);border-radius:8px;outline:none;font-family:var(--font-body);color:var(--blanco);background:#061412;transition:border-color .15s}
+.fg input:focus,.fg textarea:focus{border-color:var(--dorado)}
+.fg textarea{min-height:90px;resize:vertical}
+.fg .hint{font-size:.75rem;color:var(--gris-secundario)}
+
+/* CV PREVIEW */
+.cv-preview{background:var(--blanco);border:1px solid var(--verde-light);border-radius:var(--r-lg);overflow:hidden;font-family:'DM Sans',sans-serif}
+.cv-head{background:var(--verde-mid);padding:1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.cv-name{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--blanco);margin-bottom:3px}
+.cv-subtitle-bar{font-size:.82rem;color:#9FE1CB}
+.cv-contact-info{font-size:.78rem;color:rgba(255,255,255,.85);text-align:right;line-height:1.9}
+.cv-sec-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--verde-mid);border-bottom:2px solid var(--verde-mid);padding-bottom:3px;margin:1.25rem 0 .75rem}
+.cv-sec-title:first-child{margin-top:0}
+.cv-body{padding:1.5rem;color:var(--negro)}
+.cv-job{font-size:.88rem;font-weight:600;color:var(--negro)}
+.cv-company-name{font-size:.82rem;color:var(--verde-mid);font-weight:600}
+.cv-period{font-size:.75rem;color:#4A4A47;font-style:italic}
+.cv-bul{font-size:.8rem;color:#4A4A47;padding-left:1rem;margin-bottom:3px}
+.cv-bul::before{content:'▸ ';color:var(--verde-mid);margin-left:-1rem}
+
+/* INTERVIEW */
+.interview-wrap{background:var(--fondo-premium);border:1px solid var(--verde-light);border-radius:var(--r-lg);overflow:hidden}
+.interview-head{background:linear-gradient(135deg,var(--verde-light) 0%,var(--verde-mid) 100%);padding:1.5rem;color:var(--blanco)}
+.interview-ava{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:.75rem}
+.question-box{background:var(--gris-pale);border:1px solid var(--menta);border-radius:var(--r);padding:1rem 1.25rem;margin-bottom:1rem;font-size:.9rem;color:var(--blanco);font-weight:500;line-height:1.6}
+.answer-area{width:100%;min-height:110px;padding:.875rem 1rem;border:1px solid var(--verde-light);border-radius:8px;font-size:.875rem;font-family:var(--font-body);color:var(--blanco);resize:vertical;outline:none;transition:border-color .15s;margin-bottom:1rem;background:#061412}
+.answer-area:focus{border-color:var(--dorado)}
+.feedback-box{background:var(--gris-pale);border:1px solid var(--verde-light);border-radius:var(--r);padding:1rem 1.25rem;font-size:.875rem;color:var(--blanco);line-height:1.75;display:none;margin-top:1rem}
+.feedback-box.visible{display:block}
+.score-stars{color:#EF9F27;font-size:1.1rem;letter-spacing:2px;margin-bottom:.75rem}
+
+/* LEGAL RESOURCES */
+.resource-link{display:flex;align-items:center;gap:12px;background:var(--fondo-premium);border:1px solid var(--verde-light);border-radius:var(--r);padding:.875rem 1rem;margin-bottom:8px;text-decoration:none;color:var(--blanco);transition:all .18s}
+.resource-link:hover{border-color:var(--dorado);background:var(--gris-pale);text-decoration:none}
+.resource-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem}
+.resource-name{font-size:.875rem;font-weight:600;color:var(--blanco)}
+.resource-desc{font-size:.78rem;color:var(--gris-secundario)}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--verde-light);margin-bottom:2rem;overflow-x:auto}
+.tab-btn{padding:10px 20px;background:none;border:none;border-bottom:2px solid transparent;font-size:.875rem;font-weight:500;color:var(--gris-secundario);cursor:pointer;font-family:var(--font-body);white-space:nowrap;transition:all .15s;margin-bottom:-1px}
+.tab-btn:hover,.tab-btn.active{color:var(--dorado);border-bottom-color:var(--dorado)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* FOOTER */
+.footer{background:#040D0B;color:var(--gris-secundario);padding:4rem 2rem 2rem;border-top:1px solid var(--verde-light)}
+.footer-grid{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:2.5rem}
+.footer-brand{font-family:var(--font-display);font-size:1.15rem;font-weight:700;color:var(--blanco);margin-bottom:.5rem}
+.footer-brand span{color:var(--dorado)}
+.footer-desc{font-size:.82rem;line-height:1.7;color:var(--gris-secundario)}
+.footer-col h4{font-size:.82rem;font-weight:600;color:var(--blanco);margin-bottom:.875rem;text-transform:uppercase;letter-spacing:.06em}
+.footer-col a{display:block;font-size:.82rem;color:var(--gris-secundario);margin-bottom:.4rem;transition:color .15s}
+.footer-col a:hover{color:var(--dorado);text-decoration:none}
+.footer-bottom{max-width:1120px;margin:0 auto;border-top:1px solid var(--verde-light);padding-top:1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.75rem;font-size:.75rem;color:var(--gris-secundario)}
+
+/* SECTION ANCHORS */
+.section-tab{display:none}
+.section-tab.active{display:block}
+.main-nav-tab{display:flex;gap:0;background:var(--fondo-premium);border-bottom:1px solid var(--verde-light);overflow-x:auto;position:sticky;top:60px;z-index:90;padding:0 2rem}
+.main-tab-btn{padding:1rem 1.25rem;background:none;border:none;border-bottom:2px solid transparent;font-size:.875rem;font-weight:500;color:var(--gris-secundario);cursor:pointer;font-family:var(--font-body);white-space:nowrap;transition:all .15s;margin-bottom:-1px}
+.main-tab-btn:hover,.main-tab-btn.active{color:var(--dorado);border-bottom-color:var(--dorado)}
+
+/* SPINNER */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--verde-light);border-top-color:var(--dorado);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* DRAWER */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;backdrop-filter:blur(2px)}
+.drawer-overlay.open{display:block}
+.drawer{position:fixed;top:0;left:0;height:100%;width:260px;background:var(--fondo-premium);border-right:1px solid var(--verde-light);z-index:201;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:0}
+.drawer.open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--verde-light)}
+.drawer-logo{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--blanco);display:flex;align-items:center;gap:7px}
+.drawer-close{background:none;border:none;color:var(--gris-secundario);font-size:1.3rem;cursor:pointer;line-height:1;padding:4px}
+.drawer-close:hover{color:var(--dorado)}
+.drawer-nav{list-style:none;padding:1rem 0;flex:1}
+.drawer-nav li a{display:flex;align-items:center;gap:10px;padding:.75rem 1.25rem;font-size:.9rem;font-weight:500;color:var(--gris-secundario);transition:all .15s;text-decoration:none}
+.drawer-nav li a:hover,.drawer-nav li a.active{background:var(--gris-pale);color:var(--blanco)}
+.drawer-nav li a i{font-size:1.1rem;width:20px;text-align:center}
+.drawer-cta{margin:0 1.25rem 1.5rem;background:linear-gradient(135deg,var(--dorado),#D97706);color:var(--negro);font-weight:700;border-radius:10px;padding:.85rem 1.25rem;display:flex;align-items:center;gap:10px;font-size:.9rem;cursor:pointer;border:none;font-family:var(--font-body);width:calc(100% - 2.5rem);text-decoration:none}
+.drawer-cta:hover{filter:brightness(1.1);color:var(--negro);text-decoration:none}
+
+/* RESPONSIVE — tablet */
+@media(max-width:900px){
+  .grid-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .grid-2{grid-template-columns:1fr}
+  .company-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+}
+
+/* RESPONSIVE — móvil */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hamburger{display:block}
+  .hero{padding:3.5rem 1.5rem 3rem}
+  .footer-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .section{padding:3.5rem 0}
+  .grid-3{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+  .company-grid{grid-template-columns:1fr}
+  .card[style*="grid-column"]{grid-column:span 1 !important}
+  .container{padding:0 1rem}
+  .container-sm{padding:0 1rem}
+  .mod-tabs{flex-direction:column!important}
+  .mod-tabs .tab-btn{border-bottom:1px solid var(--verde-mid)!important;border-left:3px solid transparent;text-align:left;padding:12px 16px}
+  .mod-tabs .tab-btn.active{border-left-color:var(--dorado)!important;border-bottom-color:transparent!important}
+  .mod-tabs .tab-btn:last-child{border-bottom:none!important}
+  .chat-wrap{border-radius:var(--r);overflow:visible}
+  #mod-cv{padding:1rem!important}
+  .cv-head{flex-direction:column;gap:.5rem}
+  .cv-contact-info{text-align:left!important}
+  .cv-preview{font-size:.8rem}
+}
 /* ===== SERVICIOS + WHATSAPP (CR Integração Cultural) ===== */
-.btn-whatsapp{{background:#25D366;color:#05100E}}
-.btn-whatsapp:hover{{background:#1ebe5b;color:#05100E;text-decoration:none;filter:none}}
-.btn-whatsapp i{{font-size:1.15rem}}
-.srv-card{{display:flex;flex-direction:column}}
-.srv-card .btn{{margin-top:auto;justify-content:center}}
-.srv-list{{list-style:none;margin:1rem 0 1.5rem;padding:0}}
-.srv-list li{{position:relative;padding-left:1.4rem;margin-bottom:.5rem;font-size:.85rem;line-height:1.6;color:var(--gris-secundario)}}
-.srv-list li::before{{content:"";position:absolute;left:0;top:.55rem;width:7px;height:7px;border-radius:50%;background:var(--dorado)}}
-.srv-note{{margin:2rem auto 0;max-width:760px;text-align:center;font-size:.8rem;font-style:italic;color:var(--gris-secundario);line-height:1.7}}
-.srv-cta{{margin:3rem auto 0;max-width:760px;text-align:center;background:var(--gris-pale);border:1px solid var(--verde-light);border-radius:var(--r-lg);padding:2rem 1.5rem}}
-.srv-cta h3{{font-family:var(--font-display);font-size:1.35rem;margin-bottom:.5rem;color:var(--blanco)}}
-.srv-cta p{{font-size:.9rem;color:var(--gris-secundario);margin-bottom:1.25rem;line-height:1.7}}
-.wa-float{{position:fixed;right:20px;bottom:20px;z-index:150;display:flex;align-items:center;gap:8px;background:#25D366;color:#05100E;font-weight:700;font-size:.9rem;font-family:var(--font-body);padding:14px 20px;border-radius:999px;box-shadow:0 6px 24px rgba(0,0,0,.4);text-decoration:none;transition:transform .18s,box-shadow .18s}}
-.wa-float:hover{{color:#05100E;transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,211,102,.35);text-decoration:none}}
-.wa-float i{{font-size:1.5rem;line-height:1}}
-@media(max-width:768px){{
-  .wa-float{{right:14px;bottom:14px;padding:14px}}
-  .wa-float span{{display:none}}
-}}
-""")
+.btn-whatsapp{background:#25D366;color:#05100E}
+.btn-whatsapp:hover{background:#1ebe5b;color:#05100E;text-decoration:none;filter:none}
+.btn-whatsapp i{font-size:1.15rem}
+.srv-card{display:flex;flex-direction:column}
+.srv-card .btn{margin-top:auto;justify-content:center}
+.srv-list{list-style:none;margin:1rem 0 1.5rem;padding:0}
+.srv-list li{position:relative;padding-left:1.4rem;margin-bottom:.5rem;font-size:.85rem;line-height:1.6;color:var(--gris-secundario)}
+.srv-list li::before{content:"";position:absolute;left:0;top:.55rem;width:7px;height:7px;border-radius:50%;background:var(--dorado)}
+.srv-note{margin:2rem auto 0;max-width:760px;text-align:center;font-size:.8rem;font-style:italic;color:var(--gris-secundario);line-height:1.7}
+.srv-cta{margin:3rem auto 0;max-width:760px;text-align:center;background:var(--gris-pale);border:1px solid var(--verde-light);border-radius:var(--r-lg);padding:2rem 1.5rem}
+.srv-cta h3{font-family:var(--font-display);font-size:1.35rem;margin-bottom:.5rem;color:var(--blanco)}
+.srv-cta p{font-size:.9rem;color:var(--gris-secundario);margin-bottom:1.25rem;line-height:1.7}
+.wa-float{position:fixed;right:20px;bottom:20px;z-index:150;display:flex;align-items:center;gap:8px;background:#25D366;color:#05100E;font-weight:700;font-size:.9rem;font-family:var(--font-body);padding:14px 20px;border-radius:999px;box-shadow:0 6px 24px rgba(0,0,0,.4);text-decoration:none;transition:transform .18s,box-shadow .18s}
+.wa-float:hover{color:#05100E;transform:translateY(-2px);box-shadow:0 8px 28px rgba(37,211,102,.35);text-decoration:none}
+.wa-float i{font-size:1.5rem;line-height:1}
+@media(max-width:768px){
+  .wa-float{right:14px;bottom:14px;padding:14px}
+  .wa-float span{display:none}
+}
+</style>
+</head>
+<body>
 
-# ------------------------------------------------------- HTML: menú escritorio
-NAV_ITEM = j("""      <li><a href="#servicios" id="m-servicios" onclick="showMain('servicios')">Servicios</a></li>""")
+<!-- DRAWER MÓVIL -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer" role="dialog" aria-label="Menú de navegación">
+  <div class="drawer-head">
+    <div class="drawer-logo"><div class="logo-dot"></div> Talento sin Fronteras</div>
+    <button class="drawer-close" onclick="closeDrawer()" aria-label="Cerrar menú"><i class="ti ti-x"></i></button>
+  </div>
+  <ul class="drawer-nav">
+    <li><a href="#" id="d-inicio" class="active" onclick="showMain('inicio');closeDrawer()"><i class="ti ti-home"></i> Inicio</a></li>
+    <li><a href="#" id="d-guia" onclick="showMain('guia');closeDrawer()"><i class="ti ti-map"></i> Guía paso a paso</a></li>
+    <li><a href="#" id="d-documentacion" onclick="showMain('documentacion');closeDrawer()"><i class="ti ti-id"></i> Documentación</a></li>
+    <li><a href="#" id="d-derechos" onclick="showMain('derechos');closeDrawer()"><i class="ti ti-shield"></i> Derechos Laborales</a></li>
+    <li><a href="#" id="d-empresas" onclick="showMain('empresas');closeDrawer()"><i class="ti ti-building"></i> Empresas Inclusivas</a></li>
+    <li><a href="#" id="d-servicios" onclick="showMain('servicios');closeDrawer()"><i class="ti ti-briefcase"></i> Servicios</a></li>
+  </ul>
+  <a href="#" class="drawer-cta" onclick="showMain('herramientas');closeDrawer()"><i class="ti ti-robot"></i> Herramientas con IA</a>
+</div>
 
-# ------------------------------------------------------- HTML: menú móvil
-DRAWER_ITEM = j("""    <li><a href="#" id="d-servicios" onclick="showMain('servicios');closeDrawer()"><i class="ti ti-briefcase"></i> Servicios</a></li>""")
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#inicio" class="logo" onclick="showMain('inicio')">
+      <div class="logo-dot"></div> Talento sin Fronteras
+    </a>
+    <button class="hamburger" onclick="openDrawer()" aria-label="Abrir menú"><i class="ti ti-menu-2"></i></button>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="#inicio" id="m-inicio" class="active" onclick="showMain('inicio')">Inicio</a></li>
+      <li><a href="#guia" id="m-guia" onclick="showMain('guia')">Guía</a></li>
+      <li><a href="#documentacion" id="m-documentacion" onclick="showMain('documentacion')">Documentación</a></li>
+      <li><a href="#derechos" id="m-derechos" onclick="showMain('derechos')">Derechos</a></li>
+      <li><a href="#empresas" id="m-empresas" onclick="showMain('empresas')">Empresas</a></li>
+      <li><a href="#servicios" id="m-servicios" onclick="showMain('servicios')">Servicios</a></li>
+      <li><a href="#herramientas" id="m-herramientas" class="nav-cta" onclick="showMain('herramientas')">Herramientas IA</a></li>
+    </ul>
+  </div>
+</nav>
 
-# ------------------------------------------------------- HTML: botón en hero
-HERO_BTN = j(f"""          <a href="{wa(MSG_GENERAL)}" class="btn btn-whatsapp" target="_blank" rel="noopener"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Hablar por WhatsApp</a>""")
 
-# ------------------------------------------------------- HTML: tarjeta en Inicio
-HOME_CARD = j("""
+
+<main>
+
+  <div id="sec-inicio" class="section-tab active">
+    <header class="hero" id="inicio">
+      <div class="hero-inner">
+        <div class="hero-kicker">
+          <i class="ti ti-world" aria-hidden="true"></i> Guía Global de Relocalización, Visados y Empleo
+        </div>
+        <h1>Tu talento no tiene<br><em>fronteras</em> ni barreras</h1>
+        <p class="hero-sub">Guía completa de documentación, regularización, homologación de títulos, derechos laborales y herramientas con IA para conseguir empleo en España sin discriminación.</p>
+        <div class="hero-btns">
+          <a href="#guia" class="btn btn-blanco" onclick="showMain('guia')">Explorar guía completa</a>
+          <a href="#herramientas" class="btn btn-outline-blanco" onclick="showMain('herramientas')">Consultor con IA</a>
+          <a href="https://wa.me/34665575607?text=Hola%2C%20vengo%20de%20la%20web%20Talento%20sin%20Fronteras%20y%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20vuestros%20servicios." class="btn btn-whatsapp" target="_blank" rel="noopener"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Hablar por WhatsApp</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="section section-alt">
+      <div class="container">
+        <div class="sh">
+          <span class="sh-eyebrow">Todo en un solo lugar</span>
+          <h2>¿Qué necesitas hoy?</h2>
+          <p>Elige el módulo que más se ajusta a tu situación actual. Puedes navegar entre todos libremente.</p>
+        </div>
+        <div class="grid-3">
+          <div class="card" onclick="showMain('guia')" style="cursor:pointer">
+            <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-map" style="color:var(--dorado)"></i></div>
+            <h3>Guía paso a paso</h3>
+            <p>El recorrido completo desde tu llegada hasta conseguir empleo. CV, entrevistas y estrategia.</p>
+            <div class="card-link">Ver guía <i class="ti ti-arrow-right"></i></div>
+          </div>
+          <div class="card" onclick="showMain('documentacion')" style="cursor:pointer">
+            <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-id" style="color:var(--dorado)"></i></div>
+            <h3>Documentación y regularización</h3>
+            <p>NIE, TIE, permisos de trabajo, doble nacionalidad y homologación de títulos. Explicado paso a paso.</p>
+            <div class="card-link">Ver documentación <i class="ti ti-arrow-right"></i></div>
+          </div>
+          <div class="card" onclick="showMain('derechos')" style="cursor:pointer">
+            <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-shield" style="color:var(--menta)"></i></div>
+            <h3>Derechos laborales</h3>
+            <p>Lo que tienes derecho a exigir, cómo denunciar discriminación y recursos legales gratuitos.</p>
+            <div class="card-link">Ver derechos <i class="ti ti-arrow-right"></i></div>
+          </div>
+          <div class="card" onclick="showMain('empresas')" style="cursor:pointer">
+            <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-building"></i></div>
+            <h3>Empresas inclusivas</h3>
+            <p>Directorio de empresas en España con certificaciones reales de diversidad e inclusión.</p>
+            <div class="card-link">Ver empresas <i class="ti ti-arrow-right"></i></div>
+          </div>
+          <div class="card" onclick="showMain('herramientas')" style="cursor:pointer; grid-column: span 2;">
+            <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-robot" style="color:var(--menta)"></i></div>
+            <h3>Herramientas con IA</h3>
+            <p>Consultor personalizado, generador de CV adaptado y simulador de entrevistas con inteligencia artificial.</p>
+            <div class="card-link">Abrir herramientas <i class="ti ti-arrow-right"></i></div>
+          </div>
           <div class="card" onclick="showMain('servicios')" style="cursor:pointer; grid-column: 1 / -1;">
             <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-briefcase" style="color:var(--dorado)"></i></div>
             <h3>Servicios de CR Integração Cultural</h3>
             <p>Clases de español, integración cultural, consultoría y orientación sobre trámites. Acompañamiento personalizado y contacto directo por WhatsApp.</p>
             <div class="card-link">Ver servicios <i class="ti ti-arrow-right"></i></div>
           </div>
-""")
+        </div>
+      </div>
+    </section>
+  </div>
 
-# ------------------------------------------------------- HTML: pestaña Servicios
-SERVICIOS_TAB = j(f"""
+  <div id="sec-guia" class="section-tab">
+    <section class="section">
+      <div class="container-sm">
+        <div class="sh">
+          <span class="sh-eyebrow">Estrategia</span>
+          <h2>Tu plan de acción en España</h2>
+          <p>Un itinerario lógico diseñado para saltarse las barreras invisibles del mercado laboral.</p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <h3>Regularización Base</h3>
+              <p>Antes de buscar empleo necesitas activar tu NIE, empadronarte y conseguir tu número de la Seguridad Social. Sin estos tres pilares, los sistemas automatizados descartan tu perfil.</p>
+              <div class="tip"><strong>Tip premium:</strong> Si posees doble nacionalidad (ej. italiana o española), sácate el certificado de registro de ciudadano de la Unión inmediatamente al llegar.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+            <div class="step-body">
+              <h3>Adaptación de Currículum (Modelo ATS)</h3>
+              <p>Los reclutadores españoles pasan una media de 6 segundos revisando un CV. Tu formato debe omitir datos innecesarios y centrarse en logros medibles.</p>
+              <div class="alert"><strong>¡Cuidado!:</strong> No incluyas pretensiones económicas ni estado civil. Usa nuestra herramienta de IA abajo para adaptarlo automáticamente.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-left"><div class="step-num">3</div></div>
+            <div class="step-body">
+              <h3>Canales de Búsqueda de Empleo</h3>
+              <p>LinkedIn e InfoJobs lideran el mercado. Configura tus alertas con palabras clave específicas como "Híbrido", "Junior" o tu sector técnico.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="sec-documentacion" class="section-tab">
+    <section class="section">
+      <div class="container-sm">
+        <div class="sh">
+          <span class="sh-eyebrow">Trámites Legales</span>
+          <h2>Guía de Documentación</h2>
+          <p>La burocracia explicada de manera clara, interactiva y accesible.</p>
+        </div>
+        
+        <div class="tabs">
+          <button class="tab-btn active" onclick="openTab(event, 'tab-nie')">NIE y TIE</button>
+          <button class="tab-btn" onclick="openTab(event, 'tab-seg-social')">Seguridad Social</button>
+          <button class="tab-btn" onclick="openTab(event, 'tab-homologacion')">Homologación</button>
+        </div>
+
+        <div id="tab-nie" class="tab-panel active">
+          <p style="margin-bottom:1rem; line-height:1.75">El <strong>NIE</strong> (Número de Identidad de Extranjero) es tu número secuencial de identificación personal. La <strong>TIE</strong> es la tarjeta física que acredita tu residencia legal.</p>
+          <div class="hl-tierra"><strong>Importante:</strong> Tener NIE no implica permiso de trabajo automático. Revisa siempre las restricciones de tu visado o autorización.</div>
+          <div class="accordion">
+            <button class="acc-btn" onclick="toggleAcc(this)">¿Cómo solicitar cita previa? <i class="ti ti-chevron-down chevron"></i></button>
+            <div class="acc-body">Se solicita a través de la Sede Electrónica de Administraciones Públicas. Elige tu provincia y el trámite de "Policía - Toma de huellas". El sistema abre citas generalmente a primera hora de la mañana.</div>
+            <button class="acc-btn" onclick="toggleAcc(this)">Requisitos para ciudadanos comunitarios <i class="ti ti-chevron-down chevron"></i></button>
+            <div class="acc-body">Pasaporte vigente, contrato de trabajo o demostración de fondos suficientes, y seguro médico completo en España si no estás trabajando.</div>
+          </div>
+        </div>
+
+        <div id="tab-seg-social" class="tab-panel">
+          <p style="margin-bottom:1rem; line-height:1.75">El <strong>Número de Afiliación (NAF)</strong> es obligatorio para que cualquier empresa pueda darte de alta e iniciar tu contrato laboral legal.</p>
+          <div class="hl-verde">Puedes solicitar tu número de la Seguridad Social de manera 100% telemática en el portal "Importass" si cuentas con Cl@ve o certificado digital.</div>
+        </div>
+
+        <div id="tab-homologacion" class="tab-panel">
+          <p style="margin-bottom:1rem; line-height:1.75">Para ejercer profesiones reguladas (médicos, ingenieros, abogados), es obligatorio tramitar la homologación ante el Ministerio de Universidades.</p>
+          <p style="line-height:1.75">Para profesiones no reguladas (como desarrollo de software o analistas de datos), suele bastar con la <strong>equivalencia</strong> o la demostración directa de portafolios y experiencia técnica.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="sec-derechos" class="section-tab">
+    <section class="section">
+      <div class="container-sm">
+        <div class="sh">
+          <span class="sh-eyebrow">Marco Legal</span>
+          <h2>Tus Derechos en el Entorno Laboral</h2>
+          <p>Conoce las leyes que te protegen contra abusos, sesgos o tratos discriminatorios.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="display:flex; align-items:center; gap:8px"><i class="ti ti-gavel" style="color:var(--dorado)"></i> Principio de Igualdad</h3>
+            <p>El Artículo 14 de la Constitución Española y el Estatuto de los Trabajadores prohíben cualquier tipo de discriminación por origen, raza, religión u orientación.</p>
+          </div>
+          <div class="card">
+            <h3 style="display:flex; align-items:center; gap:8px"><i class="ti ti-clock" style="color:var(--dorado)"></i> Jornada y Salario Mínimo</h3>
+            <p>Ningún contrato a jornada completa puede pagar menos del Salario Mínimo Interprofesional (SMI) vigente por ley. Las horas extra deben ser siempre registradas y remuneradas.</p>
+          </div>
+        </div>
+
+        <h3 style="margin:3rem 0 1rem; font-family:var(--font-display)">Canales institucionales oficiales de ayuda:</h3>
+        <a href="https://www.igualdad.gob.es/cedre" target="_blank" class="resource-link">
+          <div class="resource-icon" style="background:#22170c"><i class="ti ti-alert-triangle" style="color:var(--dorado)"></i></div>
+          <div>
+            <div class="resource-name">CEDRE — Red de Asistencia a Víctimas de Discriminación</div>
+            <div class="resource-desc">Ofrece asesoramiento gratuito e intermediación ante situaciones de racismo u origen étnico.</div>
+          </div>
+        </a>
+        <a href="https://oeitss.gob.es/tramites/personas-trabajadoras/denuncia"target="_blank" class="resource-link">
+          <div class="resource-icon" style="background:#0a2922"><i class="ti ti-file-triangle" style="color:var(--menta)"></i></div>
+          <div>
+            <div class="resource-name">Inspección de Trabajo y Seguridad Social (ITSS)</div>
+            <div class="resource-desc">Buzón formal para denunciar de forma anónima o formal los abusos empresariales e irregularidades en contratos.</div>
+          </div>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <div id="sec-empresas" class="section-tab">
+    <section class="section">
+      <div class="container">
+        <div class="sh">
+          <span class="sh-eyebrow">Directorios</span>
+          <h2>Empresas con Compromiso Real</h2>
+          <p>Compañías operando en España reconocidas por sus entornos multiculturales y procesos de selección inclusivos.</p>
+        </div>
+
+        <div class="filter-bar">
+          <button class="filter-btn active" onclick="filterSector('todos')">Todos los sectores</button>
+          <button class="filter-btn" onclick="filterSector('tecnologia')">Tecnología y Software</button>
+          <button class="filter-btn" onclick="filterSector('consultoria')">Consultoría y Gestión</button>
+          <button class="filter-btn" onclick="filterSector('atencion')">Atención al Cliente</button>
+        </div>
+
+        <div class="company-grid" id="lista-empresas">
+                   <!-- ================= CONSULTORÍA Y GESTIÓN ================= -->
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">Michael Page España</div>
+            <div class="company-sector">Consultoría, Gestión y Selección</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Currículum Ciego</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Líder global en selección que promueve la contratación sin sesgos institucionales y cuenta con una fuerte política de diversidad y apoyo LGTBIQ+.</div>
+          </div>
+
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">Baker Tilly España</div>
+            <div class="company-sector">Consultoría, Auditoría y Gestión</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Plan Igualdad LGTBI</span>
+              <span class="tag tag-gris">Madrid / Barcelona</span>
+            </div>
+            <div class="company-desc">Servicios profesionales con planes transversales de diversidad, formación activa contra sesgos corporativos y un ecosistema de trabajo flexible.</div>
+          </div>
+
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">Accenture España</div>
+            <div class="company-sector">Consultoría Tecnológica</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Plan de Diversidad</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Políticas corporativas explícitas para la integración laboral de talento internacional y auditorías de igualdad salarial.</div>
+          </div>
+
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">Deloitte España</div>
+            <div class="company-sector">Consultoría y Gestión</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Inclusión Activa</span>
+              <span class="tag tag-gris">Multisite</span>
+            </div>
+            <div class="company-desc">Programas integrales de mentoría corporativa y adaptación rápida para profesionales con doble nacionalidad.</div>
+          </div>
+
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">Amadeus IT Group</div>
+            <div class="company-sector">Tecnología y Gestión</div>
+            <div class="company-badges">
+              <span class="tag tag-gris">Sponsor Visa</span>
+              <span class="tag tag-gris">Madrid</span>
+            </div>
+            <div class="company-desc">Líder global en software de viajes con políticas explícitas de recolocación internacional y asimilación cultural efectiva.</div>
+          </div>
+
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">NTT DATA España</div>
+            <div class="company-sector">Consultoría e IT Services</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Top Company</span>
+              <span class="tag tag-gris">Multisite</span>
+            </div>
+            <div class="company-desc">Gran volumen de contratación anual de talento técnico extranjero con un enfoque corporativo de bienvenida inclusiva.</div>
+          </div>
+
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">LLYC (Llorente y Cuenca)</div>
+            <div class="company-sector">Comunicación y Gestión</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">LGBTI+ Líder</span>
+              <span class="tag tag-gris">Madrid</span>
+            </div>
+            <div class="company-desc">Impulsa una cultura altamente inclusiva con iniciativas innovadoras contra los sesgos y apoyo pro bono a comunidades minoritarias.</div>
+          </div>
+
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">PwC España</div>
+            <div class="company-sector">Consultoría y Gestión</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Sello Diversidad</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Estrategias activas para mitigar los sesgos inconscientes en procesos de promoción interna y captación de perfiles.</div>
+          </div>
+
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">EY España (Ernst & Young)</div>
+            <div class="company-sector">Consultoría y Gestión</div>
+            <div class="company-badges">
+              <span class="tag tag-gris">Inclusión Global</span>
+              <span class="tag tag-gris">Multisite</span>
+            </div>
+            <div class="company-desc">Amplio respaldo a redes de apoyo para colectivos minoritarios y planes rigurosos de conciliación y balance laboral.</div>
+          </div>
+
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">KPMG España</div>
+            <div class="company-sector">Consultoría y Gestión</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Plan Equidad</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Formación corporativa transversal en diversidad y redes internas que promueven entornos de trabajo psicológicamente seguros.</div>
+          </div>
+
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">Capgemini España</div>
+            <div class="company-sector">Consultoría Tecnológica</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Sello REDI</span>
+              <span class="tag tag-gris">Multisite</span>
+            </div>
+            <div class="company-desc">Certificada en su compromiso por la inclusión de la diversidad afectivo-sexual y la igualdad de oportunidades transversales.</div>
+          </div>
+
+          <div class="company-card" data-sector="consultoria">
+            <div class="company-name">McKinsey & Company Spain</div>
+            <div class="company-sector">Consultoría de Gestión</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Liderazgo Equitativo</span>
+              <span class="tag tag-gris">Madrid</span>
+            </div>
+            <div class="company-desc">Referente mundial en estudios de diversidad aplicados internamente para acelerar el talento femenino y multicultural.</div>
+          </div>
+
+          <!-- ================= TECNOLOGÍA Y SOFTWARE ================= -->
+          <div class="company-card" data-sector="tecnologia">
+            <div class="company-name">Glovo / Delivery Hero</div>
+            <div class="company-sector">Tecnología & Hub Digital</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Sede Multicultural</span>
+              <span class="tag tag-gris">Barcelona / Madrid</span>
+            </div>
+            <div class="company-desc">Equipos globales con más de 40 nacionalidades distintas y procesos estandarizados en inglés y español.</div>
+          </div>
+
+          <div class="company-card" data-sector="tecnologia">
+            <div class="company-name">Factorial HR</div>
+            <div class="company-sector">Tecnología y Software</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Visado Sponsor</span>
+              <span class="tag tag-gris">Barcelona</span>
+            </div>
+            <div class="company-desc">Entorno multicultural enfocado en la captación de talento técnico de diversas procedencias geográficas con soporte legal.</div>
+          </div>
+
+          <div class="company-card" data-sector="tecnologia">
+            <div class="company-name">Amazon España</div>
+            <div class="company-sector">E-Commerce & Logística</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Diversidad Global</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Fomenta activamente grupos de afinidad para empleados de distintas culturas y cuenta con pautas sólidas de contratación inclusiva.</div>
+          </div>
+
+          <div class="company-card" data-sector="tecnologia">
+            <div class="company-name">Microsoft Ibérica</div>
+            <div class="company-sector">Tecnología y Software</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Sin Sesgos</span>
+              <span class="tag tag-gris">Madrid</span>
+            </div>
+            <div class="company-desc">Implementa currículum ciego en fases iniciales y ofrece sólidos programas de inclusión para talento con orígenes internacionales.</div>
+          </div>
+
+          <div class="company-card" data-sector="tecnologia">
+            <div class="company-name">Cabify</div>
+            <div class="company-sector">Tecnología & Movilidad</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Sponsor Visa</span>
+              <span class="tag tag-gris">Madrid / Remoto</span>
+            </div>
+            <div class="company-desc">Plataforma nacida en España con procesos de selección basados puramente en competencias técnicas y soporte legal internacional.</div>
+          </div>
+
+          <div class="company-card" data-sector="tecnologia">
+            <div class="company-name">SAP España</div>
+            <div class="company-sector">Software Corporativo</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Equidad de Género</span>
+              <span class="tag tag-gris">Madrid / Barcelona</span>
+            </div>
+            <div class="company-desc">Políticas explícitas contra la brecha salarial y programas avanzados de captación de perfiles neurodiversos (Autism at Work).</div>
+          </div>
+
+          <div class="company-card" data-sector="tecnologia">
+            <div class="company-name">Google Spain</div>
+            <div class="company-sector">Tecnología y Software</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Diversidad ERG</span>
+              <span class="tag tag-gris">Madrid / Málaga</span>
+            </div>
+            <div class="company-desc">Hubs tecnológicos internacionales de excelencia con programas proactivos para la inclusión de comunidades infrarrepresentadas.</div>
+          </div>
+
+          <div class="company-card" data-sector="tecnologia">
+            <div class="company-name">Meta Spain</div>
+            <div class="company-sector">Tecnología y Software</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Inclusión Abierta</span>
+              <span class="tag tag-gris">Madrid / Remoto</span>
+            </div>
+            <div class="company-desc">Procesos de reclutamiento globales sin fronteras geográficas, centrados en la multiculturalidad y la equidad retributiva total.</div>
+          </div>
+
+          <div class="company-card" data-sector="tecnologia">
+            <div class="company-name">HP Spain</div>
+            <div class="company-sector">Hardware & Software</div>
+            <div class="company-badges">
+              <span class="tag tag-gris">Top Employer</span>
+              <span class="tag tag-gris">Barcelona / Madrid</span>
+            </div>
+            <div class="company-desc">Centros de I+D punteros que acogen a ingenieros internacionales mediante robustos protocolos de reubicación familiar y laboral.</div>
+          </div>
+
+          <div class="company-card" data-sector="tecnologia">
+            <div class="company-name">Indra / Minsait</div>
+            <div class="company-sector">Tecnología y Software</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Diversidad 360</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Sólido plan de igualdad enfocado en el desarrollo de talento joven de diferentes procedencias socioeconómicas y orígenes.</div>
+          </div>
+
+          <!-- ================= TURISMO Y HOTELERÍA (Asignado a sector 'todos') ================= -->
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">Booking.com (Spain Hub)</div>
+            <div class="company-sector">Tecnología & Turismo</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Entorno Global</span>
+              <span class="tag tag-gris">Barcelona / Remoto</span>
+            </div>
+            <div class="company-desc">Procesos de selección completamente en inglés orientados a captar perfiles de IT y soporte de cualquier rincón del mundo.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">eDreams ODIGEO</div>
+            <div class="company-sector">Turismo & Tech</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Talento Internacional</span>
+              <span class="tag tag-gris">Barcelona / Madrid</span>
+            </div>
+            <div class="company-desc">Más de 60 nacionalidades cooperando en un ecosistema abierto con fuertes incentivos para la flexibilidad e integración.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">Meliá Hotels International</div>
+            <div class="company-sector">Turismo y Hotelería</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Merco Talento</span>
+              <span class="tag tag-gris">Nacional / Baleares</span>
+            </div>
+            <div class="company-desc">Líder en reputación sectorial con programas mundiales de intercambio de talento corporativo y planes integrales de equidad.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">NH Hotel Group / Minor</div>
+            <div class="company-sector">Turismo y Hotelería</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Multiculturalidad</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Políticas explícitas enfocadas en integrar plantillas con bagajes geográficos sumamente diversos en todos los niveles operativos.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">Riu Hotels & Resorts</div>
+            <div class="company-sector">Turismo y Hotelería</div>
+            <div class="company-badges">
+              <span class="tag tag-gris">Entorno Integrador</span>
+              <span class="tag tag-gris">Sede Central/Islas</span>
+            </div>
+            <div class="company-desc">Desarrollo de sólidas escuelas de formación interna destinadas a la asimilación laboral rápida de colectivos internacionales.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">Iberostar Group</div>
+            <div class="company-sector">Turismo y Hotelería</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Sustentabilidad Social</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Enfoque centrado en la igualdad de género laboral y en potenciar el talento local y extranjero de forma equitativa.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">Ávoris Travel</div>
+            <div class="company-sector">Turismo y Distribución</div>
+            <div class="company-badges">
+              <span class="tag tag-gris">Inclusión Activa</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Gran conglomerado que fomenta la incorporación abierta de perfiles comerciales, técnicos y administrativos sin sesgos.</div>
+          </div>
+
+          <!-- ================= ATENCIÓN AL CLIENTE ================= -->
+          <div class="company-card" data-sector="atencion">
+            <div class="company-name">Webhelp / Concentrix</div>
+            <div class="company-sector">Atención al Cliente e Idiomas</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Native Speakers</span>
+              <span class="tag tag-gris">Multisite</span>
+            </div>
+            <div class="company-desc">Contratación masiva de perfiles internacionales con alta valoración de idiomas nativos y facilidades de acogida inicial.</div>
+          </div>
+
+          <div class="company-card" data-sector="atencion">
+            <div class="company-name">Teleperformance</div>
+            <div class="company-sector">Atención al Cliente</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Multilingüe</span>
+              <span class="tag tag-gris">Madrid / Remoto</span>
+            </div>
+            <div class="company-desc">Procesos de reclutamiento abiertos que priorizan las competencias lingüísticas e integran equipos de soporte diversos.</div>
+          </div>
+
+          <div class="company-card" data-sector="atencion">
+            <div class="company-name">Majorel España</div>
+            <div class="company-sector">Atención al Cliente</div>
+            <div class="company-badges">
+              <span class="tag tag-gris">Diversidad Cultural</span>
+              <span class="tag tag-gris">Multisite</span>
+            </div>
+            <div class="company-desc">Especialistas en BPO con políticas activas para el acompañamiento y onboarding de talento nativo expatriado.</div>
+          </div>
+
+          <div class="company-card" data-sector="atencion">
+            <div class="company-name">Sitel Group / Foundever</div>
+            <div class="company-sector">Atención al Cliente</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Inclusión Global</span>
+              <span class="tag tag-gris">Nacional / Remoto</span>
+            </div>
+            <div class="company-desc">Entornos seguros multilingües con fuertes esquemas de flexibilidad horaria y adaptabilidad para colectivos migrantes.</div>
+          </div>
+
+          <div class="company-card" data-sector="atencion">
+            <div class="company-name">CPM International (Barcelona)</div>
+            <div class="company-sector">Atención al Cliente</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Hub Internacional</span>
+              <span class="tag tag-gris">Barcelona</span>
+            </div>
+            <div class="company-desc">Oficinas multiculturales masivas con soporte integral y patrocinio en gestiones burocráticas a profesionales extranjeros.</div>
+          </div>
+
+          <div class="company-card" data-sector="atencion">
+            <div class="company-name">Transcom Spain</div>
+            <div class="company-sector">Atención al Cliente</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Plan Diversidad</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Forte apuesta por la inserción laboral de mujeres en sectores técnicos y adaptabilidad de puestos para operarios diversos.</div>
+          </div>
+
+          <!-- ================= OTROS SECTORES (Asignado a sector 'todos') ================= -->
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">Inditex</div>
+            <div class="company-sector">Retail & Moda</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Multiculturalidad</span>
+              <span class="tag tag-gris">Nacional / Galicia</span>
+            </div>
+            <div class="company-desc">Acoge en sus oficinas centrales y centros logísticos a profesionales procedentes de decenas de mercados internacionales.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">BBVA</div>
+            <div class="company-sector">Banca y Servicios Financieros</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Diversidad ERG</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Destaca por programas corporativos de inclusión, desarrollo profesional internacional y fuertes políticas de equidad de género.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">Telefónica</div>
+            <div class="company-sector">Telecomunicaciones</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Plan de Igualdad</span>
+              <span class="tag tag-gris">Madrid / Nacional</span>
+            </div>
+            <div class="company-desc">Compromiso certificado en diversidad con redes internas activas de apoyo para empleados y contratación de perfiles globales.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">Airbus España</div>
+            <div class="company-sector">Ingeniería y Fabricación</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Entorno Técnico</span>
+              <span class="tag tag-gris">Madrid / Sevilla</span>
+            </div>
+            <div class="company-desc">Fomenta entornos multiculturales de ingeniería, facilitando la colaboración internacional y procesos de captación sin sesgos regionales.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">ILUNION</div>
+            <div class="company-sector">Servicios y Gestión Social</div>
+            <div class="company-badges">
+              <span class="tag tag-verde">Inclusión Total</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Líder indiscutible en la integración laboral de personas con discapacidad y fomento de diversidad en múltiples sectores en España.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">Zurich España</div>
+            <div class="company-sector">Seguros y Finanzas</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">Redes de Afinidad</span>
+              <span class="tag tag-gris">Barcelona / Madrid</span>
+            </div>
+            <div class="company-desc">Reconocida por sus sólidas redes ERG compuestas por empleados que asesoran activamente en convivencia generacional y LGTBIQ+.</div>
+          </div>
+
+          <div class="company-card" data-sector="todos">
+            <div class="company-name">ACCIONA</div>
+            <div class="company-sector">Infraestructura y Energía</div>
+            <div class="company-badges">
+              <span class="tag tag-tierra">VariableD Top30</span>
+              <span class="tag tag-gris">Nacional</span>
+            </div>
+            <div class="company-desc">Despliega de manera excelente planes globales de diversidad geográfica y equidad en proyectos de gran envergadura.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <div id="sec-servicios" class="section-tab">
     <section class="section">
       <div class="container">
@@ -97,7 +1001,7 @@ SERVICIOS_TAB = j(f"""
               <li>Español para el entorno laboral</li>
               <li>Preparación para los exámenes DELE A2 y CCSE</li>
             </ul>
-            <a href="{wa(MSG_IDIOMAS)}" class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Consultar por WhatsApp</a>
+            <a href="https://wa.me/34665575607?text=Hola%2C%20me%20interesa%20el%20servicio%20de%20Idiomas%20%28clases%20de%20espa%C3%B1ol%20/%20preparaci%C3%B3n%20DELE%20A2%20o%20CCSE%29.%20%C2%BFMe%20das%20m%C3%A1s%20informaci%C3%B3n%3F" class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Consultar por WhatsApp</a>
           </div>
           <div class="card srv-card">
             <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-world" style="color:var(--menta)"></i></div>
@@ -107,7 +1011,7 @@ SERVICIOS_TAB = j(f"""
               <li>Cultura laboral y comunicación en España</li>
               <li>Orientación para la vida diaria y la convivencia</li>
             </ul>
-            <a href="{wa(MSG_INTEGRACION)}" class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Consultar por WhatsApp</a>
+            <a href="https://wa.me/34665575607?text=Hola%2C%20me%20interesa%20la%20orientaci%C3%B3n%20de%20Integraci%C3%B3n%20cultural%20en%20Espa%C3%B1a.%20%C2%BFMe%20das%20m%C3%A1s%20informaci%C3%B3n%3F" class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Consultar por WhatsApp</a>
           </div>
           <div class="card srv-card">
             <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-file-description" style="color:var(--dorado)"></i></div>
@@ -118,92 +1022,645 @@ SERVICIOS_TAB = j(f"""
               <li>Orientación profesional</li>
               <li>Revisión de CV y preparación de entrevistas</li>
             </ul>
-            <a href="{wa(MSG_CONSULTORIA)}" class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Consultar por WhatsApp</a>
+            <a href="https://wa.me/34665575607?text=Hola%2C%20me%20interesa%20la%20Consultor%C3%ADa%20/%20Inmigraci%C3%B3n%20%28tr%C3%A1mites%2C%20documentaci%C3%B3n%2C%20CV%20y%20entrevistas%29.%20%C2%BFMe%20das%20m%C3%A1s%20informaci%C3%B3n%3F" class="btn btn-whatsapp btn-sm" target="_blank" rel="noopener"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Consultar por WhatsApp</a>
           </div>
         </div>
         <p class="srv-note">La orientación sobre trámites y documentación es informativa y no sustituye la asesoría legal profesional.</p>
         <div class="srv-cta">
           <h3>¿Hablamos?</h3>
           <p>Cuéntanos tu situación y te orientamos sobre el mejor siguiente paso. Respondemos por WhatsApp.</p>
-          <a href="{wa(MSG_GENERAL)}" class="btn btn-whatsapp btn-lg" target="_blank" rel="noopener"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Escribir por WhatsApp</a>
+          <a href="https://wa.me/34665575607?text=Hola%2C%20vengo%20de%20la%20web%20Talento%20sin%20Fronteras%20y%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20vuestros%20servicios." class="btn btn-whatsapp btn-lg" target="_blank" rel="noopener"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Escribir por WhatsApp</a>
         </div>
       </div>
     </section>
   </div>
+  <div id="sec-herramientas" class="section-tab">
+    <section class="section section-alt">
+      <div class="container">
+        <div class="sh">
+          <span class="sh-eyebrow">Tecnología Inteligente</span>
+          <h2>Potencia tu Perfil Profesional</h2>
+          <p>Utiliza nuestros tres módulos interactivos con IA para resolver dudas de visado, optimizar tu CV y ensayar entrevistas.</p>
+        </div>
 
-""")
+        <div class="chat-wrap" style="max-width:900px">
+          <div class="tabs mod-tabs" style="background:var(--verde-light); padding:0; border-bottom:none; margin-bottom:0">
+            <button class="tab-btn active" id="btn-mod-chat" onclick="switchMod('chat')" style="color:var(--blanco); font-weight:600">1. Consultor IA de Visados</button>
+            <button class="tab-btn" id="btn-mod-cv" onclick="switchMod('cv')" style="color:var(--blanco); font-weight:600">2. Generador de CV ATS</button>
+            <button class="tab-btn" id="btn-mod-entrevista" onclick="switchMod('entrevista')" style="color:var(--blanco); font-weight:600">3. Simulador de Entrevistas</button>
+          </div>
 
-# ------------------------------------------------------- HTML: botón flotante
-FLOAT_BTN = j(f"""
+          <div id="mod-chat" class="mod-panel" style="display:none">
+            <div class="chat-top">
+              <div class="chat-ava"><i class="ti ti-brand-openai" style="color:var(--dorado)"></i></div>
+              <div>
+                <div class="chat-name">Asesor Global de Extranjería</div>
+                <div class="chat-status">● Inteligencia Artificial en línea</div>
+              </div>
+            </div>
+            <div class="chat-msgs" id="chat-box">
+              <div class="msg msg-bot">¡Hola! 👋 Soy tu consultor de extranjería con la normativa actualizada a 2026. Puedo orientarte sobre los <strong>5 tipos de arraigo</strong>, renovación de NIE/TIE, cómo pasar de visado de estudiante a permiso de trabajo, la <strong>regularización extraordinaria 2026</strong> y mucho más. ¿Cuál es tu consulta?</div>
+            </div>
+            <div class="quick-btns">
+              <button class="quick-btn" onclick="quickQuery('¿Cuáles son los 5 tipos de arraigo en 2026 y sus requisitos?')">🏠 Tipos de arraigo 2026</button>
+              <button class="quick-btn" onclick="quickQuery('¿Qué necesito para renovar mi TIE en 2026?')">🪪 Renovar NIE/TIE</button>
+              <button class="quick-btn" onclick="quickQuery('¿Cómo cambio mi visado de estudiante a permiso de trabajo en 2026?')">💼 Estudiante → Trabajo</button>
+              <button class="quick-btn" onclick="quickQuery('¿Qué es la regularización extraordinaria 2026 y quién puede solicitarla?')">⭐ Regularización 2026</button>
+            </div>
+            <div class="chat-input-row">
+              <input type="text" class="chat-input" id="chat-in" placeholder="Escribe tu consulta legal o de empleo aquí..." onkeypress="if(event.key==='Enter')sendChat()">
+              <button class="chat-send" onclick="sendChat()">Enviar</button>
+            </div>
+          </div>
+
+          <div id="mod-cv" class="mod-panel" style="display:none; padding:1.5rem">
+            <p style="font-size:.875rem; color:var(--gris-secundario); margin-bottom:1.5rem">Rellena tus datos profesionales. Nuestro motor de IA los formateará y redactará optimizando el texto para superar los filtros ciegos (ATS) de recursos humanos en España.</p>
+            <div style="display:grid; grid-template-columns:1fr; gap:1.25rem">
+              <div class="form-row">
+                <div class="fg"><label>Nombre Completo <span>*</span></label><input type="text" id="cv-nombre" placeholder="Ej. Carlos Mendoza"></div>
+                <div class="fg"><label>Título Profesional o Especialidad <span>*</span></label><input type="text" id="cv-titulo" placeholder="Ej. Desarrollador Frontend / Administrador"></div>
+              </div>
+              <div class="form-row">
+                <div class="fg"><label>Teléfono (Prefijo España recomendado) <span>*</span></label><input type="text" id="cv-telefono" placeholder="Ej. +34 600 000 000"></div>
+                <div class="fg"><label>Correo Electrónico <span>*</span></label><input type="email" id="cv-email" placeholder="carlos@example.com"></div>
+              </div>
+              <div class="form-row">
+                <div class="fg"><label>Enlace a LinkedIn / Portafolio</label><input type="text" id="cv-linkedin" placeholder="linkedin.com/in/tuperfil"></div>
+                <div class="fg"><label>Ubicación actual en España <span>*</span></label><input type="text" id="cv-ciudad" placeholder="Ej. Madrid, España (Disp. Inmediata)"></div>
+              </div>
+              <div class="fg"><label>Resumen de Perfil Profesional</label><textarea id="cv-resumen" placeholder="Describe brevemente tus años de experiencia y principales competencias técnicas..."></textarea></div>
+              <div class="fg"><label>Experiencia Laboral (Último puesto, Empresa, Logros)</label><textarea id="cv-experiencia" placeholder="Ej. Analista de Datos en TechCorp (2023-2025): Lideré la migración de bases de datos optimizando consultas en un 25%..."></textarea></div>
+              <div class="fg"><label>Educación y Certificaciones Técnicas</label><textarea id="cv-educacion" placeholder="Ej. Grado en Ingeniería de Sistemas / Certificación Profesional de Python..."></textarea></div>
+              <button class="btn btn-verde" style="justify-content:center" onclick="generateCV()"><i class="ti ti-file-text"></i> Optimizar y Generar CV Profesional</button>
+            </div>
+
+            <div id="cv-output-container" style="display:none; margin-top:2rem">
+              <h3 style="font-size:1rem; margin-bottom:0.75rem; color:var(--dorado)">Previsualización del Currículum Optimizado:</h3>
+              <div class="cv-preview" id="cv-print-area">
+                <div class="cv-head">
+                  <div>
+                    <div class="cv-name" id="p-nombre">Nombre de ejemplo</div>
+                    <div class="cv-subtitle-bar" id="p-titulo">Especialidad Profesional</div>
+                  </div>
+                  <div class="cv-contact-info" id="p-contacto">Madrid, España · +34 600 000 000 · email@ejemplo.com</div>
+                </div>
+                <div class="cv-body">
+                  <div class="cv-sec-title">Perfil Profesional</div>
+                  <p style="font-size:.82rem; line-height:1.6; color:#1A1A18; margin-bottom:1rem" id="p-resumen">Texto del perfil adaptado por la IA para cumplir con la normativa española de selección ciega.</p>
+                  <div class="cv-sec-title">Experiencia Laboral</div>
+                  <div id="p-experiencia">Detalles estructurados de la trayectoria.</div>
+                  <div class="cv-sec-title">Educación y Habilidades</div>
+                  <div id="p-educacion">Títulos oficiales, cursos y tecnologías dominadas.</div>
+                </div>
+              </div>
+              <p style="font-size:.78rem; color:var(--gris-secundario); margin-top:0.75rem">💡 Puedes imprimir o guardar en PDF haciendo clic derecho sobre la previsualización y seleccionando "Imprimir".</p>
+            </div>
+          </div>
+
+          <div id="mod-entrevista" class="mod-panel" style="display:none; padding:1.5rem">
+            <div class="interview-wrap">
+              <div class="interview-head">
+                <div style="font-size:1.05rem; font-weight:600">Simulador de Entrevistas</div>
+                <p style="font-size:.8rem; color:var(--gris-secundario)">Entrénate con la IA.</p>
+              </div>
+              <div style="padding:1.25rem">
+                <div class="fg" style="margin-bottom:1rem">
+                  <label>Selecciona tu perfil:</label>
+                  <select id="int-perfil" onchange="loadQuestion()">
+                    <option value="data">Analista de Datos</option>
+                    <option value="web">Desarrollador Web</option>
+                    <option value="admin">Administración</option>
+                  </select>
+                </div>
+                <div class="question-box" id="question-text">Pregunta del reclutador...</div>
+                <textarea id="answer-text" class="answer-area" placeholder="Escribe tu respuesta aquí..."></textarea>
+                <div style="display:flex; gap:10px; flex-wrap:wrap">
+                  <button id="btn-evaluar" class="btn btn-verde btn-sm" onclick="evaluateAnswer()"><i class="ti ti-sparkles"></i> Evaluar mi respuesta con IA</button>
+                  <button class="btn btn-outline-blanco btn-sm" onclick="loadQuestion()"><i class="ti ti-refresh"></i> Cambiar pregunta</button>
+                </div>
+                <div id="feedback-area" class="feedback-box">Resultado...</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /.chat-wrap -->
+      </div><!-- /.container -->
+    </section>
+  </div><!-- /#sec-herramientas -->
+
+</main>
+
 <!-- BOTÓN FLOTANTE WHATSAPP -->
-<a href="{wa(MSG_GENERAL)}" class="wa-float" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i><span>WhatsApp</span></a>
+<a href="https://wa.me/34665575607?text=Hola%2C%20vengo%20de%20la%20web%20Talento%20sin%20Fronteras%20y%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20vuestros%20servicios." class="wa-float" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i><span>WhatsApp</span></a>
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <div class="footer-brand">Talento <span>sin Fronteras</span></div>
+      <p class="footer-desc">Plataforma integral, interactiva y gratuita de orientación laboral y regularización para profesionales extranjeros con NIE activo o doble nacionalidad en España. Sin discriminación, con estrategia.</p>
+      <p class="footer-desc" style="margin-top:.875rem">Servicios por <strong style="color:var(--blanco)">CR Integração Cultural</strong>.</p>
+      <a href="https://wa.me/34665575607?text=Hola%2C%20vengo%20de%20la%20web%20Talento%20sin%20Fronteras%20y%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20vuestros%20servicios." target="_blank" rel="noopener" style="margin-top:.5rem;display:inline-flex;align-items:center;gap:6px"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> +34 665 57 56 07</a>
+    </div>
+    <div class="footer-col">
+      <h4>Módulos</h4>
+      <a href="#guia" onclick="showMain('guia')">Guía paso a paso</a>
+      <a href="#documentacion" onclick="showMain('documentacion')">Documentación</a>
+      <a href="#derechos" onclick="showMain('derechos')">Derechos laborales</a>
+      <a href="#empresas" onclick="showMain('empresas')">Empresas inclusivas</a>
+      <a href="#servicios" onclick="showMain('servicios')">Servicios</a>
+    </div>
+    <div class="footer-col">
+      <h4>Herramientas IA</h4>
+      <a href="#herramientas" onclick="showMain('herramientas'); switchMod('chat')">Consultor de Visados</a>
+      <a href="#herramientas" onclick="showMain('herramientas'); switchMod('cv')">Generador de CV ATS</a>
+      <a href="#herramientas" onclick="showMain('herramientas'); switchMod('entrevista')">Simulador de Entrevistas</a>
+    </div>
+    <div class="footer-col">
+      <h4>Recursos Oficiales</h4>
+      <a href="https://www.igualdad.gob.es/cedre" target="_blank">CEDRE — Discriminación</a>
+      <a href="https://www.sepe.es" target="_blank">SEPE — Empleo Público</a>
+      <a href="https://extranjeros.inclusion.gob.es" target="_blank">Portal de Extranjería</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>&copy; 2026 Talento sin Fronteras · Hecho con 💚 para la comunidad extranjera en España.</div>
+    <div style="font-style:italic; color:var(--gris-secundario)">Información orientativa de libre acceso. No sustituye asesoría legal profesional.</div>
+  </div>
+</footer>
 
-""")
+<script>
+// Menú Responsive en Móviles
+function openDrawer(){
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function toggleMenu(){ openDrawer(); }
 
-# ------------------------------------------------------- HTML: pie de página
-FOOTER_LINKS = j("""      <a href="#servicios" onclick="showMain('servicios')">Servicios</a>""")
-FOOTER_CONTACT = j(f"""      <p class="footer-desc" style="margin-top:.875rem">Servicios por <strong style="color:var(--blanco)">CR Integração Cultural</strong>.</p>
-      <a href="{wa(MSG_GENERAL)}" target="_blank" rel="noopener" style="margin-top:.5rem;display:inline-flex;align-items:center;gap:6px"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> +34 665 57 56 07</a>""")
+// Enrutamiento Dinámico de Secciones Principales
+function showMain(targetId){
+  document.querySelectorAll('.section-tab').forEach(sec => sec.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+  document.querySelectorAll('.drawer-nav a').forEach(link => link.classList.remove('active'));
 
+  const targetSection = document.getElementById('sec-' + targetId);
+  const targetMenuLink = document.getElementById('m-' + targetId);
+  const targetDrawerLink = document.getElementById('d-' + targetId);
 
-# ----------------------------------------------------------------- utilidades
-def line_bounds(texto: str, ancla: str, desde: int = 0):
-    i = texto.find(ancla, desde)
-    if i < 0:
-        raise SystemExit(f"No se encontró el ancla: {ancla!r}. El archivo no coincide con lo esperado.")
-    ini = texto.rfind("\n", 0, i) + 1
-    fin = texto.find("\n", i)
-    fin = len(texto) if fin < 0 else fin + 1
-    return ini, fin
+  if(targetSection) targetSection.classList.add('active');
+  if(targetMenuLink) targetMenuLink.classList.add('active');
+  if(targetDrawerLink) targetDrawerLink.classList.add('active');
 
+  document.getElementById('nav-menu').classList.remove('open');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
 
-def insert_after_line(texto, ancla, bloque, desde=0):
-    _, fin = line_bounds(texto, ancla, desde)
-    return texto[:fin] + bloque + texto[fin:]
+// Alternar pestañas secundarias (Módulo Documentación)
+function openTab(evt, tabName) {
+  const container = evt.currentTarget.parentElement.parentElement;
+  container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabName).classList.add('active');
+  evt.currentTarget.classList.add('active');
+}
 
+// Acordeones Funcionales
+function toggleAcc(btn) {
+  btn.classList.toggle('open');
+  const body = btn.nextElementSibling;
+  body.classList.toggle('open');
+}
 
-def insert_before_line(texto, ancla, bloque, desde=0):
-    ini, _ = line_bounds(texto, ancla, desde)
-    return texto[:ini] + bloque + texto[ini:]
+// Filtro de Empresas por Sector
+function filterSector(sector) {
+  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  
+  document.querySelectorAll('.company-card').forEach(card => {
+    if(sector === 'todos' || card.getAttribute('data-sector') === sector) {
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
 
+// Alternar entre los submódulos de Inteligencia Artificial
+function switchMod(modType){
+  document.querySelectorAll('.mod-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('#sec-herramientas .tab-btn').forEach(b => b.classList.remove('active'));
+  
+  document.getElementById('mod-' + modType).style.display = 'block';
+  document.getElementById('btn-mod-' + modType).classList.add('active');
+}
 
-def main():
-    if len(sys.argv) != 2:
-        raise SystemExit(__doc__)
-    ruta = sys.argv[1]
-    with open(ruta, "r", encoding="utf-8", newline="") as f:
-        t = f.read()
+function abrirSimulador() {
+  showMain('herramientas');
+  switchMod('entrevista');
+  loadQuestion();
+}
 
-    if 'id="sec-servicios"' in t:
-        print("Ya aplicado: index.html ya contiene la pestaña Servicios. No se modifica nada.")
-        return
+// Preguntas del Simulador de Entrevistas basadas en perfil profesional
+const bancoPreguntas = {
+  data: [
+    "Cuéntame un caso real donde encontraste un sesgo o anomalía importante en una base de datos y cómo lo solucionaste.",
+    "¿Cómo le explicarías a un cliente de negocio no técnico la diferencia entre una correlación y una causalidad en un informe de métricas?",
+    "¿Qué herramientas utilizas para limpiar datos masivos y asegurar la calidad de la información antes de un despliegue?"
+  ],
+  web: [
+    "¿Cómo optimizas el rendimiento y la velocidad de carga de una aplicación web que tiene muchos recursos multimedia integrados?",
+    "Háblame de una ocasión en la que tuviste un conflicto de fusión (merge conflict) crítico en Git y cómo lo resolviste en equipo.",
+    "¿Qué estrategias sigues para asegurar que tus diseños web CSS sean completamente accesibles (normativas WCAG)?"
+  ],
+  admin: [
+    "¿Cómo priorizas tus tareas diarias cuando recibes múltiples solicitudes urgentes de diferentes directivos al mismo tiempo?",
+    "Describe un proceso administrativo que consideraras ineficiente en tu anterior puesto y cómo lograste automatizarlo o mejorarlo.",
+    "¿Cómo manejas la comunicación con un cliente interno o proveedor que está visiblemente molesto por un retraso administrativo?"
+  ]
+};
 
-    shutil.copyfile(ruta, ruta + ".bak")
+function loadQuestion(){
+  const sector = document.getElementById('int-perfil').value;
+  const preguntas = bancoPreguntas[sector];
+  const aleatoria = preguntas[Math.floor(Math.random() * preguntas.length)];
+  document.getElementById('question-text').innerText = aleatoria;
+  document.getElementById('answer-text').value = "";
+  const f = document.getElementById('feedback-area');
+  if (f) f.classList.remove('visible');
+}
 
-    # 1) CSS (antes de cerrar el <style> existente)
-    t = insert_before_line(t, "</style>", CSS)
-    # 2) Menú de escritorio (antes del botón Herramientas IA)
-    t = insert_after_line(t, 'id="m-empresas"', NAV_ITEM)
-    # 3) Menú móvil
-    t = insert_after_line(t, 'id="d-empresas"', DRAWER_ITEM)
-    # 4) Botón en el hero
-    t = insert_after_line(t, "Consultor con IA</a>", HERO_BTN)
-    # 5) Tarjeta en Inicio (tras la tarjeta de Herramientas con IA)
-    _, fin = line_bounds(t, "Abrir herramientas")
-    _, fin = line_bounds(t, "</div>", fin)  # cierre de la tarjeta
-    t = t[:fin] + HOME_CARD + t[fin:]
-    # 6) Pestaña Servicios (antes de la pestaña Herramientas)
-    t = insert_before_line(t, 'id="sec-herramientas"', SERVICIOS_TAB)
-    # 7) Botón flotante (antes del pie de página)
-    t = insert_before_line(t, '<footer class="footer">', FLOAT_BTN)
-    # 8) Pie de página: enlace a Servicios y contacto
-    t = insert_after_line(t, "Empresas inclusivas</a>", FOOTER_LINKS, desde=t.find('<footer class="footer">'))
-    t = insert_after_line(t, 'class="footer-desc"', FOOTER_CONTACT, desde=t.find('<footer class="footer">'))
+// Inicializar la primera pregunta al cargar la página
+window.addEventListener('DOMContentLoaded', () => {
+  loadQuestion();
+});
 
-    with open(ruta, "w", encoding="utf-8", newline="") as f:
-        f.write(t)
-    print("Listo. Copia de seguridad en", ruta + ".bak")
+/* SIMULACIÓN LOCAL DEL MOTOR DE INTELIGENCIA ARTIFICIAL */
 
+/* ── CONSULTOR EXTRANJERÍA 2026 — RESPUESTAS LOCALES ────────────────────── */
 
-if __name__ == "__main__":
-    main()
+const respuestasExtranjeriaDB = [
+  {
+    keywords: ['arraigo','arraigos','tipos de arraigo','cuantos arraigos','5 arraigos'],
+    respuesta: `📋 <strong>Los 5 tipos de arraigo vigentes en 2026</strong> (RD 1155/2024, en vigor desde mayo 2025):<br><br>
+<strong>1. Arraigo Social</strong><br>
+• Permanencia continuada de <strong>2 años</strong> en España (antes eran 3)<br>
+• Documentos: pasaporte, empadronamiento histórico, antecedentes penales apostillados (España + país de origen, últimos 5 años), informe de integración social del Ayuntamiento, contrato de trabajo mínimo 1 año (o 20h si tienes menores a cargo) o medios económicos propios (~600€/mes)<br>
+• Duración: 1 año inicial + renovaciones de 4 años<br><br>
+<strong>2. Arraigo Sociolaboral</strong><br>
+• Relación laboral no declarada de mínimo 6 meses, acreditada por sentencia o resolución de Inspección de Trabajo<br><br>
+<strong>3. Arraigo Familiar</strong><br>
+• Para extranjeros con hijos españoles o que sean progenitor de ciudadano español<br>
+• Sin tiempo mínimo de residencia · puede dar residencia de hasta 5 años directamente<br><br>
+<strong>4. Arraigo de Segunda Oportunidad</strong><br>
+• Para quien tuvo residencia legal previa y cayó en situación irregular<br><br>
+<strong>5. Arraigo Socioformativo</strong><br>
+• 2 años en situación irregular + matricularse en FP, certificado de profesionalidad o idiomas en universidad<br>
+• Permite trabajar hasta 20h semanales durante la formación<br>
+• Si la formación dura más de 1 año → permiso de trabajo posterior de 4 años<br><br>
+⚠️ <em>Te recomiendo consultar con un abogado de extranjería para analizar cuál aplica mejor a tu caso concreto.</em>`
+  },
+  {
+    keywords: ['arraigo social','arraigo sociales','requisitos arraigo social'],
+    respuesta: `🏠 <strong>Arraigo Social 2026 — Requisitos completos</strong><br><br>
+✅ <strong>Requisitos principales:</strong><br>
+• Estar en España de forma continuada mínimo <strong>2 años</strong> (reducido de 3 por la reforma de 2025)<br>
+• No tener antecedentes penales en España ni en países donde hayas residido los últimos 5 años<br>
+• No tener prohibición de entrada en España<br>
+• No ser ciudadano de la UE<br><br>
+📋 <strong>Documentos necesarios:</strong><br>
+• Formulario EX-10<br>
+• Pasaporte completo (todas las páginas)<br>
+• Certificado de empadronamiento histórico (prueba más importante)<br>
+• Antecedentes penales apostillados de tu país de origen<br>
+• Informe de arraigo social emitido por los Servicios Sociales del Ayuntamiento<br>
+• Contrato de trabajo (mínimo 1 año, jornada completa) o medios económicos propios (~600€/mes en 2026)<br>
+• Fotos tamaño carné<br>
+• Justificante pago tasa 790<br><br>
+📅 <strong>Plazos:</strong><br>
+• Resolución en aproximadamente 3 meses<br>
+• Informe de arraigo del Ayuntamiento: 30 días desde solicitud<br><br>
+💶 <strong>Coste orientativo:</strong> ~600€ + tasas<br><br>
+⚠️ <em>Consulta con un abogado de extranjería para preparar bien el expediente — es la fase donde más errores se cometen.</em>`
+  },
+  {
+    keywords: ['arraigo socioformativo','arraigo formacion','arraigo formación','estudiar para arraigo'],
+    respuesta: `🎓 <strong>Arraigo Socioformativo 2026</strong><br><br>
+✅ <strong>Requisitos:</strong><br>
+• Llevar <strong>2 años en situación irregular</strong> en España<br>
+• Matricularse en: FP, Certificado de Profesionalidad, o idiomas en universidad acreditada<br>
+• No tener antecedentes penales<br><br>
+💼 <strong>Ventajas clave:</strong><br>
+• Puedes trabajar hasta <strong>20 horas semanales</strong> mientras estudias<br>
+• Si la formación dura más de 1 año → el permiso de trabajo posterior es de <strong>4 años</strong><br>
+• Se amplió el abanico de cursos válidos (hasta 50h en algunos casos)<br><br>
+📋 <strong>Documentos:</strong><br>
+• Pasaporte, empadronamiento, antecedentes penales apostillados<br>
+• Matrícula confirmada en el curso formativo<br>
+• Formulario EX-10<br><br>
+⚠️ <em>Es una excelente alternativa si no encuentras contrato de trabajo. Consulta con un abogado para verificar que tu curso es válido.</em>`
+  },
+  {
+    keywords: ['nie','renovar nie','renovacion nie','renovación nie','tie','renovar tie','renovacion tie'],
+    respuesta: `🪪 <strong>Renovación NIE/TIE 2026</strong><br><br>
+ℹ️ <strong>Importante:</strong> El NIE (número) <strong>NUNCA cambia</strong>. Lo que se renueva es la Tarjeta de Identidad de Extranjero (TIE).<br><br>
+📋 <strong>Documentos generales:</strong><br>
+• Formulario EX-17<br>
+• Pasaporte vigente (original + copia)<br>
+• TIE anterior<br>
+• Fotos tamaño carné<br>
+• Justificante pago tasa 790<br>
+• Seguro médico sin carencias ni copagos (filtro número 1 en 2026)<br>
+• Medios económicos: ~600€/mes (IPREM 2026)<br><br>
+🎓 <strong>Novedad 2026 para estudiantes:</strong><br>
+• Ya <strong>NO hay que renovar cada año</strong><br>
+• La autorización cubre toda la duración de los estudios<br>
+• Solo hay que comunicar la matrícula del nuevo curso a la Oficina de Extranjería<br><br>
+📅 <strong>¿Cuándo solicitarla?</strong><br>
+• 60 días antes de que caduque la TIE actual<br>
+• Si ya caducó: solicítala cuanto antes para evitar irregularidad sobrevenida<br><br>
+⚠️ <em>Si tienes resolución negativa, tienes 1 mes para recurso de alzada o recurso contencioso-administrativo.</em>`
+  },
+  {
+    keywords: ['estudiante trabajo','visado estudiante trabajo','cambiar visado estudiante','estudiante a trabajar','modificacion estancia estudios','modificación estancia'],
+    respuesta: `💼 <strong>Cambiar visado de estudiante a permiso de trabajo 2026</strong><br><br>
+📌 Modalidad oficial: <em>"Modificación de estancia por estudios a residencia y trabajo"</em><br><br>
+✅ <strong>Novedades 2026:</strong><br>
+• <strong>NO necesitas visado</strong> si ya estás en España<br>
+• Desde la admisión a trámite: puedes trabajar a <strong>jornada completa</strong> (gran novedad)<br>
+• Primera autorización: 1 año · Renovaciones: hasta 4 años<br><br>
+📋 <strong>Por cuenta ajena (con contrato):</strong><br>
+• Contrato de trabajo que cumpla el SMI vigente<br>
+• Pasaporte vigente, TIE de estudiante<br>
+• Formulario correspondiente + tasa<br><br>
+📋 <strong>Por cuenta propia (autónomo):</strong><br>
+• Plan de empresa con viabilidad económica<br>
+• Recursos para inversión inicial<br>
+• Experiencia o formación afín al negocio<br><br>
+🔄 <strong>Si no encuentras contrato:</strong><br>
+• El <strong>arraigo socioformativo</strong> es tu mejor alternativa — matrícula en FP o certificado de profesionalidad<br><br>
+⚠️ <em>Los familiares autorizados conjuntamente obtienen estabilidad y evitan procedimientos adicionales. Consulta con abogado de extranjería.</em>`
+  },
+  {
+    keywords: ['regularizacion','regularización','regularizacion extraordinaria','regularización extraordinaria','irregular','irregulares 2026'],
+    respuesta: `⭐ <strong>Regularización Extraordinaria 2026</strong><br><br>
+📅 <strong>Plazo:</strong> 16 abril – 30 junio 2026 (improrrogable)<br><br>
+✅ <strong>¿Quién puede solicitarla?</strong><br>
+• Extranjeros en situación irregular con residencia previa al 31/12/2025<br>
+• No tener antecedentes penales<br>
+• No estar en plazo de compromiso de no retorno<br><br>
+❌ <strong>¿Quién NO puede solicitarla?</strong><br>
+• Quienes tengan trámite en curso (renovación, prórroga o modificación)<br>
+• Estudiantes con visa de estudios activa<br>
+• Residentes no lucrativos<br>
+• Solicitantes de asilo o protección internacional<br><br>
+📋 <strong>Trámite:</strong><br>
+• Telemático: plataforma <strong>MERCURIO</strong><br>
+• Presencial: Correos, Seguridad Social u Oficinas de Extranjería habilitadas<br><br>
+🪪 <strong>Permiso obtenido:</strong><br>
+• 1 año de residencia y trabajo<br>
+• Luego modificable o prorrogable<br><br>
+ℹ️ Si tenías un arraigo en trámite desde el 20/05/2025 → se concede directamente sin nueva solicitud<br><br>
+⚠️ <em>El plazo es improrrogable. Si crees que puedes acogerte, actúa antes del 30 de junio 2026.</em>`
+  },
+  {
+    keywords: ['nomada digital','nómada digital','visa nomada','visado nómada','trabajo remoto','remote work'],
+    respuesta: `💻 <strong>Visa Nómada Digital España 2026</strong><br><br>
+✅ <strong>Requisitos principales:</strong><br>
+• Trabajar para empresas <strong>fuera de España</strong> (mínimo 80% de ingresos del extranjero)<br>
+• Titulación universitaria <strong>O</strong> experiencia demostrable de al menos 3 años en tu sector<br>
+• Ingresos mínimos: <strong>200% del SMI</strong> (~2.646€/mes netos en 2026)<br>
+• Seguro médico con cobertura total en España<br>
+• No tener antecedentes penales<br><br>
+📋 <strong>Documentos:</strong><br>
+• Pasaporte vigente<br>
+• Contrato con empresa extranjera o acreditación de actividad freelance<br>
+• Extractos bancarios de los últimos 3-6 meses<br>
+• Titulación o CV con experiencia profesional<br>
+• Seguro médico privado<br><br>
+⏱️ <strong>Duración:</strong> 1 año inicial, renovable hasta 5 años<br><br>
+💡 <strong>Ventaja fiscal:</strong> Puedes acogerte al régimen especial de impatriados (Ley Beckham) y tributar al 24% en lugar del tipo general<br><br>
+⚠️ <em>Consulta con un gestor fiscal y abogado de extranjería para optimizar tu situación tributaria.</em>`
+  },
+  {
+    keywords: ['nacionalidad','nacionalidad española','hacerme español','ciudadania','ciudadanía'],
+    respuesta: `🇪🇸 <strong>Nacionalidad Española 2026 — ¿Cuánto tiempo necesitas?</strong><br><br>
+⏱️ <strong>Plazos según origen:</strong><br>
+• <strong>10 años</strong>: caso general<br>
+• <strong>5 años</strong>: refugiados<br>
+• <strong>2 años</strong>: nacionales de países iberoamericanos, Andorra, Filipinas, Guinea Ecuatorial, Portugal y sefardíes<br>
+• <strong>1 año</strong>: nacido en España · casado/a con español/a · viudo/a de español/a · hijo/nieto de español de origen<br><br>
+📋 <strong>Requisitos generales:</strong><br>
+• Residencia legal y continuada durante el periodo exigido<br>
+• NIE/TIE vigente<br>
+• Sin antecedentes penales en España ni en el país de origen<br>
+• Prueba <strong>CCSE</strong> (conocimientos constitucionales) — si no eres hispanohablante también DELE A2<br>
+• Renuncia a la nacionalidad anterior (excepto iberoamericanos y países con convenio bilateral)<br><br>
+📅 <strong>Trámite:</strong><br>
+• Online en la sede electrónica del <strong>Ministerio de Justicia</strong><br>
+• Plazo de resolución: puede tardar entre 1 y 3 años actualmente<br><br>
+⚠️ <em>Los periodos de irregularidad no computan. Solo cuentan los años con residencia legal.</em>`
+  },
+  {
+    keywords: ['trabajar estudiante','puedo trabajar','horas trabajo estudiante','trabajar con visa estudiante'],
+    respuesta: `💼 <strong>¿Puedo trabajar con visa de estudiante en España? 2026</strong><br><br>
+✅ <strong>Sí, puedes trabajar</strong> con visa de estudiante, con límites:<br><br>
+📋 <strong>Condiciones:</strong><br>
+• Máximo <strong>30 horas semanales</strong> durante el curso académico<br>
+• Las horas de trabajo no pueden coincidir con las horas lectivas obligatorias<br>
+• En período vacacional: puedes trabajar a jornada completa<br><br>
+🔄 <strong>Para trabajar sin restricciones:</strong><br>
+• Solicita la <strong>Modificación de estancia por estudios a residencia y trabajo</strong><br>
+• Desde la admisión a trámite ya puedes trabajar a jornada completa (novedad 2026)<br><br>
+🎓 <strong>Arraigo socioformativo como alternativa:</strong><br>
+• Si llevas 2 años en situación irregular, puedes matricularte en FP o certificado de profesionalidad<br>
+• Trabajar hasta 20h semanales durante la formación<br><br>
+⚠️ <em>Revisa siempre las condiciones específicas de tu autorización de estancia. Consulta con un abogado de extranjería.</em>`
+  },
+  {
+    keywords: ['reagrupacion','reagrupación','reagrupar familia','traer familia','traer pareja','traer hijos'],
+    respuesta: `👨‍👩‍👧 <strong>Reagrupación Familiar en España 2026</strong><br><br>
+✅ <strong>¿Quién puede reagrupar?</strong><br>
+• Extranjeros con residencia legal de al menos <strong>1 año</strong> y autorización para residir al menos otro año más<br><br>
+👥 <strong>¿A quién puedes reagrupar?</strong><br>
+• Cónyuge o pareja de hecho registrada<br>
+• Hijos menores de 18 años (o mayores dependientes)<br>
+• Ascendientes mayores de 65 años a tu cargo<br><br>
+📋 <strong>Requisitos del reagrupante:</strong><br>
+• Vivienda adecuada (informe de habitabilidad)<br>
+• Medios económicos suficientes:<br>
+  — 1 familiar: 150% del IPREM (~900€/mes)<br>
+  — 2 familiares: 200% del IPREM (~1.200€/mes)<br>
+  — Por cada familiar adicional: +50% IPREM<br><br>
+📅 <strong>Plazo resolución:</strong> 3 meses<br><br>
+⚠️ <em>Los familiares reagrupados obtienen autorización de residencia y trabajo. Consulta con abogado de extranjería para preparar el expediente.</em>`
+  },
+  {
+    keywords: ['permiso residencia','residencia permanente','residencia larga duracion','larga duración','permanente'],
+    respuesta: `📄 <strong>Residencia de Larga Duración en España 2026</strong><br><br>
+✅ <strong>Requisitos:</strong><br>
+• <strong>5 años</strong> de residencia legal y continuada en España<br>
+• No tener antecedentes penales<br>
+• Medios económicos suficientes (mínimo 100% IPREM mensual)<br>
+• No haber estado fuera de España más de 10 meses en los 5 años (o 6 meses seguidos)<br><br>
+🌟 <strong>Ventajas de la larga duración:</strong><br>
+• Renovación automática (no caduca si no cometes infracciones graves)<br>
+• Libre acceso al mercado laboral sin restricciones<br>
+• Posibilidad de residir en otros países de la UE<br>
+• Base para solicitar la nacionalidad española<br><br>
+📋 <strong>Documentos:</strong><br>
+• Formulario EX-11<br>
+• Pasaporte, TIE actual<br>
+• Certificado de empadronamiento histórico<br>
+• Declaración de IRPF de los últimos años<br>
+• Tasa 790<br><br>
+⚠️ <em>Es el paso previo más sólido antes de solicitar la nacionalidad española.</em>`
+  },
+  {
+    keywords: ['mercurio','sede electronica','cita previa','cita extranjeria','donde tramitar'],
+    respuesta: `💻 <strong>¿Dónde tramitar los permisos de extranjería en España?</strong><br><br>
+🖥️ <strong>Plataforma MERCURIO (telemático):</strong><br>
+• <a href="https://sede.administracionespublicas.gob.es" target="_blank" style="color:var(--dorado)">sede.administracionespublicas.gob.es</a><br>
+• Necesitas certificado digital o Cl@ve PIN<br>
+• Disponible 24/7, recomendado para evitar desplazamientos<br><br>
+🏢 <strong>Presencial — Oficinas de Extranjería:</strong><br>
+• Pide cita previa en: <a href="https://icp.administracionelectronica.gob.es" target="_blank" style="color:var(--dorado)">icp.administracionelectronica.gob.es</a><br>
+• Lleva SIEMPRE original y copia de cada documento<br><br>
+📮 <strong>Otros puntos presenciales:</strong><br>
+• Oficinas de Correos habilitadas<br>
+• Oficinas de la Seguridad Social<br><br>
+📞 <strong>Consultas:</strong><br>
+• Teléfono extranjería: 060<br>
+• Atención en Alicante: Av. Aguilera, 1<br><br>
+⚠️ <em>Las citas previas para extranjería tienen mucha demanda. Revisa disponibilidad con semanas de antelación.</em>`
+  }
+];
+
+function buscarRespuesta(texto) {
+  const textoLower = texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  
+  for (const item of respuestasExtranjeriaDB) {
+    for (const keyword of item.keywords) {
+      const kwNorm = keyword.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (textoLower.includes(kwNorm)) {
+        return item.respuesta;
+      }
+    }
+  }
+  
+  // Respuesta genérica si no coincide
+  return `ℹ️ Gracias por tu consulta sobre <em>"${texto}"</em>.<br><br>
+Para orientarte correctamente, puedo ayudarte con estos temas de extranjería en España 2026:<br><br>
+• 🏠 <strong>Arraigos</strong> — los 5 tipos vigentes y sus requisitos<br>
+• 🪪 <strong>Renovación NIE/TIE</strong> — documentos y plazos<br>
+• 💼 <strong>Cambiar visado de estudiante a trabajo</strong><br>
+• ⭐ <strong>Regularización extraordinaria 2026</strong><br>
+• 💻 <strong>Visa Nómada Digital</strong><br>
+• 🇪🇸 <strong>Nacionalidad española</strong> — plazos según origen<br>
+• 👨‍👩‍👧 <strong>Reagrupación familiar</strong><br>
+• 📄 <strong>Residencia de larga duración</strong><br><br>
+Escribe tu pregunta con más detalle o usa los botones de acceso rápido. Para casos específicos, te recomiendo consultar con un <strong>abogado de extranjería</strong>.`;
+}
+
+function sendChat() {
+  const input = document.getElementById('chat-in');
+  const text = input.value.trim();
+  if(!text) return;
+  
+  const box = document.getElementById('chat-box');
+  
+  const userMsg = document.createElement('div');
+  userMsg.className = 'msg msg-user';
+  userMsg.innerText = text;
+  box.appendChild(userMsg);
+  input.value = '';
+  box.scrollTop = box.scrollHeight;
+  
+  const thinking = document.createElement('div');
+  thinking.className = 'msg-thinking';
+  thinking.innerHTML = '<span class="spinner"></span> Consultando normativa de extranjería 2026...';
+  box.appendChild(thinking);
+  box.scrollTop = box.scrollHeight;
+  
+  setTimeout(() => {
+    thinking.remove();
+    const botMsg = document.createElement('div');
+    botMsg.className = 'msg msg-bot';
+    botMsg.innerHTML = buscarRespuesta(text);
+    box.appendChild(botMsg);
+    box.scrollTop = box.scrollHeight;
+  }, 900);
+}
+
+function quickQuery(text) {
+  document.getElementById('chat-in').value = text;
+  sendChat();
+}
+
+function generateCV() {
+  const nombre = document.getElementById('cv-nombre').value.trim() || "Profesional Internacional";
+  const titulo = document.getElementById('cv-titulo').value.trim() || "Especialista Técnico";
+  const tlf = document.getElementById('cv-telefono').value.trim() || "+34 600 000 000";
+  const email = document.getElementById('cv-email').value.trim() || "talento@ejemplo.com";
+  const linkedin = document.getElementById('cv-linkedin').value.trim() || "linkedin.com/in/perfil";
+  const ciudad = document.getElementById('cv-ciudad').value.trim() || "España (Disponibilidad Geográfica)";
+  
+  const resumen = document.getElementById('cv-resumen').value.trim() || "Profesional cualificado con alto enfoque en resultados, optimización operativa y rápida adaptación a metodologías de trabajo ágiles de nivel europeo.";
+  const experiencia = document.getElementById('cv-experiencia').value.trim() || "Trayectoria destacada gestionando proyectos, liderando flujos de trabajo y superando objetivos clave del departamento mediante competencias técnicas avanzadas.";
+  const educacion = document.getElementById('cv-educacion').value.trim() || "Formación superior homologable y competencias tecnológicas actualizadas alineadas al sector.";
+
+  // Renderizado dinámico en la plantilla ATS
+  document.getElementById('p-nombre').innerText = nombre;
+  document.getElementById('p-titulo').innerText = titulo;
+  document.getElementById('p-contacto').innerText = `${ciudad} · ${tlf} · ${email} · ${linkedin}`;
+  document.getElementById('p-resumen').innerText = resumen;
+  
+  // Conversión básica de saltos de línea a HTML para simular listas ordenadas
+  document.getElementById('p-experiencia').innerHTML = `<div class="cv-job">${titulo}</div><div class="cv-company-name">Empresa de Trayectoria</div><p style="font-size:.8rem;color:#4A4A47;margin-bottom:6px">${experiencia.replace(/\n/g, '<br>')}</p>`;
+  document.getElementById('p-educacion').innerHTML = `<p style="font-size:.8rem;color:#4A4A47">${educacion.replace(/\n/g, '<br>')}</p>`;
+  
+  document.getElementById('cv-output-container').style.display = 'block';
+  document.getElementById('cv-output-container').scrollIntoView({behavior: 'smooth'});
+}
+
+function evaluateAnswer() {
+  const answer = document.getElementById('answer-text').value.trim();
+  if(!answer) { alert("Por favor, introduce una respuesta para evaluar."); return; }
+  
+  const btn = document.getElementById('btn-evaluar');
+  btn.innerHTML = '<span class="spinner"></span> Analizando tu respuesta...';
+  btn.disabled = true;
+  
+  setTimeout(() => {
+    btn.innerHTML = '<i class="ti ti-sparkles"></i> Evaluar mi respuesta con IA';
+    btn.disabled = false;
+    
+    const feedback = document.getElementById('feedback-area');
+    feedback.className = "feedback-box visible";
+    
+    // Simulación de evaluación integral cualitativa basada en longitud y palabras clave
+    if(answer.length < 40) {
+      feedback.innerHTML = `
+        <div class="score-stars">★★☆☆☆</div>
+        <div style="font-size:.875rem;font-weight:600;color:#c4611a;margin-bottom:.5rem">Respuesta demasiado breve</div>
+        <p style="color:var(--blanco);line-height:1.6"><strong>Fortaleza:</strong> Eres directo al grano.<br>
+        <strong>Punto de mejora:</strong> Los reclutadores en España valoran la metodología **STAR** (Situación, Tarea, Acción, Resultado). Desarrolla más tu ejemplo indicando qué problema enfrentabas y cuál fue el beneficio numérico o de negocio exacto de tu intervención.</p>
+      `;
+    } else {
+      feedback.innerHTML = `
+        <div class="score-stars">★★★★★</div>
+        <div style="font-size:.875rem;font-weight:600;color:var(--menta);margin-bottom:.5rem">¡Excelente estructura profesional!</div>
+        <p style="color:var(--blanco);line-height:1.6"><strong>Fortaleza:</strong> Utilizas un vocabulario activo profesional muy valorado, exponiendo el contexto técnico de forma clara y sin divagar.<br>
+        <strong>Consejo extra:</strong> Al responder de forma presencial, mantén un tono pausado y recalca tu capacidad de integrarte de forma óptima e inmediata en equipos ágiles o multiculturales en España.</p>
+      `;
+    }
+    feedback.scrollIntoView({behavior: 'smooth'});
+  }, 1000);
+}
+</script>
+
+</body>
+</html>
