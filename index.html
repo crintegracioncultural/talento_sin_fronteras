@@ -314,6 +314,9 @@ a:hover{color:var(--menta);text-decoration:none}
   .wa-float{right:14px;bottom:14px;padding:14px}
   .wa-float span{display:none}
 }
+/* Logos institucionales en Derechos laborales */
+.resource-logo{width:170px;max-width:42%;height:auto;border-radius:8px;border:1px solid var(--verde-light);flex-shrink:0;display:block}
+@media(max-width:600px){.resource-link:has(.resource-logo){flex-direction:column;align-items:flex-start}.resource-logo{width:190px;max-width:100%}}
 </style>
 </head>
 <body>
@@ -519,15 +522,15 @@ a:hover{color:var(--menta);text-decoration:none}
         </div>
 
         <h3 style="margin:3rem 0 1rem; font-family:var(--font-display)">Canales institucionales oficiales de ayuda:</h3>
-        <a href="https://www.igualdad.gob.es/cedre" target="_blank" class="resource-link">
-          <div class="resource-icon" style="background:#22170c"><i class="ti ti-alert-triangle" style="color:var(--dorado)"></i></div>
+        <a href="https://www.igualdad.gob.es/cedre" target="_blank" rel="noopener" class="resource-link">
+          <img class="resource-logo" src="logo-igualdad.png" alt="Ministerio de Igualdad — Gobierno de España" width="210" height="89" loading="lazy">
           <div>
             <div class="resource-name">CEDRE — Red de Asistencia a Víctimas de Discriminación</div>
             <div class="resource-desc">Ofrece asesoramiento gratuito e intermediación ante situaciones de racismo u origen étnico.</div>
           </div>
         </a>
-        <a href="https://oeitss.gob.es/tramites/personas-trabajadoras/denuncia"target="_blank" class="resource-link">
-          <div class="resource-icon" style="background:#0a2922"><i class="ti ti-file-triangle" style="color:var(--menta)"></i></div>
+        <a href="https://oeitss.gob.es/tramites/personas-trabajadoras/denuncia" target="_blank" rel="noopener" class="resource-link">
+          <img class="resource-logo" src="logo-itss.png" alt="Inspección de Trabajo y Seguridad Social — Gobierno de España" width="395" height="81" loading="lazy">
           <div>
             <div class="resource-name">Inspección de Trabajo y Seguridad Social (ITSS)</div>
             <div class="resource-desc">Buzón formal para denunciar de forma anónima o formal los abusos empresariales e irregularidades en contratos.</div>
