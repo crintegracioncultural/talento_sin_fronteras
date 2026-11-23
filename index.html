@@ -5,12 +5,12 @@
     <!-- El viewport ya lo tenías aquí, ¡perfecto! -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Talento sin Fronteras — Empleo en España para extranjeros</title>
+    <title>CR Integración Cultural — Formación multicultural · Idiomas, empleabilidad e integración</title>
     
     <!-- AQUÍ AGREGAMOS EL FAVICON -->
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     
-    <meta name="description" content="Guía completa de documentación, regularización, homologación y derechos laborales para extranjeros con NIE o doble nacionalidad en España.">
+    <meta name="description" content="CR Integración Cultural: formación multicultural, clases de español, empleabilidad, integración y emprendimiento para vivir y crecer profesionalmente en España.">
     
     <!-- Tus fuentes y estilos externos -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -317,6 +317,7 @@ a:hover{color:var(--menta);text-decoration:none}
 /* Logos institucionales en Derechos laborales */
 .resource-logo{width:170px;max-width:42%;height:auto;border-radius:8px;border:1px solid var(--verde-light);flex-shrink:0;display:block}
 @media(max-width:600px){.resource-link:has(.resource-logo){flex-direction:column;align-items:flex-start}.resource-logo{width:190px;max-width:100%}}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.25rem}
 </style>
 </head>
 <body>
@@ -365,65 +366,53 @@ a:hover{color:var(--menta);text-decoration:none}
     <header class="hero" id="inicio">
       <div class="hero-inner">
         <div class="hero-kicker">
-          <i class="ti ti-world" aria-hidden="true"></i> Guía Global de Relocalización, Visados y Empleo
+          <i class="ti ti-world" aria-hidden="true"></i> CR Integración Cultural · Formación multicultural
         </div>
         <h1>Tu talento no tiene<br><em>fronteras</em> ni barreras</h1>
-        <p class="hero-sub">Guía completa de documentación, regularización, homologación de títulos, derechos laborales y herramientas con IA para conseguir empleo en España sin discriminación.</p>
+        <p class="hero-sub">Formación, idiomas y oportunidades para crecer personal y profesionalmente.</p>
         <div class="hero-btns">
-          <a href="#guia" class="btn btn-blanco" onclick="showMain('guia')">Explorar guía completa</a>
+          <a href="#pilares" class="btn btn-blanco" onclick="document.getElementById('pilares').scrollIntoView({behavior:'smooth'});return false;">Descubre nuestra formación</a>
           <a href="#herramientas" class="btn btn-outline-blanco" onclick="showMain('herramientas')">Consultor con IA</a>
           <a href="https://wa.me/34666882240?text=Hola%2C%20vengo%20de%20la%20web%20Talento%20sin%20Fronteras%20y%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20vuestros%20servicios." class="btn btn-whatsapp" target="_blank" rel="noopener"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i> Hablar por WhatsApp</a>
         </div>
       </div>
-    </header>
+</header>
 
-    <section class="section section-alt">
-      <div class="container">
-        <div class="sh">
-          <span class="sh-eyebrow">Todo en un solo lugar</span>
-          <h2>¿Qué necesitas hoy?</h2>
-          <p>Elige el módulo que más se ajusta a tu situación actual. Puedes navegar entre todos libremente.</p>
-        </div>
-        <div class="grid-3">
-          <div class="card" onclick="showMain('guia')" style="cursor:pointer">
-            <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-map" style="color:var(--dorado)"></i></div>
-            <h3>Guía paso a paso</h3>
-            <p>El recorrido completo desde tu llegada hasta conseguir empleo. CV, entrevistas y estrategia.</p>
-            <div class="card-link">Ver guía <i class="ti ti-arrow-right"></i></div>
-          </div>
-          <div class="card" onclick="showMain('documentacion')" style="cursor:pointer">
-            <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-id" style="color:var(--dorado)"></i></div>
-            <h3>Documentación y regularización</h3>
-            <p>NIE, TIE, permisos de trabajo, doble nacionalidad y homologación de títulos. Explicado paso a paso.</p>
-            <div class="card-link">Ver documentación <i class="ti ti-arrow-right"></i></div>
-          </div>
-          <div class="card" onclick="showMain('derechos')" style="cursor:pointer">
-            <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-shield" style="color:var(--menta)"></i></div>
-            <h3>Derechos laborales</h3>
-            <p>Lo que tienes derecho a exigir, cómo denunciar discriminación y recursos legales gratuitos.</p>
-            <div class="card-link">Ver derechos <i class="ti ti-arrow-right"></i></div>
-          </div>
-          <div class="card" onclick="showMain('empresas')" style="cursor:pointer">
-            <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-building"></i></div>
-            <h3>Empresas inclusivas</h3>
-            <p>Directorio de empresas en España con certificaciones reales de diversidad e inclusión.</p>
-            <div class="card-link">Ver empresas <i class="ti ti-arrow-right"></i></div>
-          </div>
-          <div class="card" onclick="showMain('herramientas')" style="cursor:pointer; grid-column: span 2;">
-            <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-robot" style="color:var(--menta)"></i></div>
-            <h3>Herramientas con IA</h3>
-            <p>Consultor personalizado, generador de CV adaptado y simulador de entrevistas con inteligencia artificial.</p>
-            <div class="card-link">Abrir herramientas <i class="ti ti-arrow-right"></i></div>
-          </div>
-          <div class="card" onclick="showMain('servicios')" style="cursor:pointer; grid-column: 1 / -1;">
-            <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-briefcase" style="color:var(--dorado)"></i></div>
-            <h3>Servicios de CR Integração Cultural</h3>
-            <p>Clases de español, integración cultural, consultoría y orientación sobre trámites. Acompañamiento personalizado y contacto directo por WhatsApp.</p>
-            <div class="card-link">Ver servicios <i class="ti ti-arrow-right"></i></div>
-          </div>
-        </div>
+<section class="section" id="pilares">
+  <div class="container">
+    <div class="sh">
+      <span class="sh-eyebrow">Formación multicultural</span>
+      <h2>Cuatro áreas para crecer</h2>
+      <p>Te acompañamos en España: aprender el idioma, entrar en el mercado laboral, integrarte y emprender.</p>
+    </div>
+    <div class="grid-4">
+      <div class="card" onclick="showMain('servicios')" style="cursor:pointer">
+        <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-language" style="color:var(--dorado)"></i></div>
+        <h3>Idiomas</h3>
+        <p>Comunicación y aprendizaje: español para la vida y el trabajo, DELE y CCSE.</p>
+        <div class="card-link">Ver servicios <i class="ti ti-arrow-right"></i></div>
       </div>
-    </section>
+      <div class="card" onclick="showMain('guia')" style="cursor:pointer">
+        <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-briefcase" style="color:var(--dorado)"></i></div>
+        <h3>Empleabilidad</h3>
+        <p>Desarrollo profesional: CV, entrevistas, empresas inclusivas y búsqueda de empleo.</p>
+        <div class="card-link">Ver guía <i class="ti ti-arrow-right"></i></div>
+      </div>
+      <div class="card" onclick="showMain('documentacion')" style="cursor:pointer">
+        <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-world" style="color:var(--menta)"></i></div>
+        <h3>Integración</h3>
+        <p>Cultura y convivencia: trámites, derechos laborales y vida diaria en España.</p>
+        <div class="card-link">Ver documentación <i class="ti ti-arrow-right"></i></div>
+      </div>
+      <div class="card">
+        <div class="card-icon" style="background:var(--gris-pale)"><i class="ti ti-bulb" style="color:var(--dorado)"></i></div>
+        <h3>Emprendimiento</h3>
+        <p>Ideas y oportunidades para crear tu propio proyecto.</p>
+        <a class="card-link" href="https://wa.me/34666882240?text=Hola%2C%20me%20interesa%20el%20%C3%A1rea%20de%20Emprendimiento." target="_blank" rel="noopener">Consultar <i class="ti ti-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
   </div>
 
   <div id="sec-guia" class="section-tab">
@@ -1667,3 +1656,4 @@ function evaluateAnswer() {
 
 </body>
 </html>
+
